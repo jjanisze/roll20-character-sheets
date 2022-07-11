@@ -1,0 +1,51 @@
+<div class="page-ekwipunek">
+    <h1>EKWIPUNEK</h1>
+    <h5>Broń Dystansowa</h5>
+    <fieldset class="repeating_weaponsranged">
+        <label>Nazwa <input type="text" name="attr_wr_name"/></label>
+        <label>Magazynek<input type="number" name="attr_wr_ammo" placeholder="0"/></label>
+        <label>Pojemność<input type="number" name="attr_wr_magazine" placeholder="0"/></label>
+        <label>Na zacięcie<input type="number" name="attr_wr_misfire" placeholder="0"/></label>
+        <label>Niecelność<input type="number" name="attr_wr_bonus_accuracy" placeholder="0"/></label>
+        <label>PP<input type="number" name="attr_wr_armorpiercing" placeholder="0"/></label>
+        <label>Obrażenia
+            <select name="attr_wr_damage">
+                <option value="0">D</option>
+                <option value="1">L</option>
+                <option value="2">C</option>
+                <option value="3">K</option>
+                <option value="4">ŚR</option>
+            </select>
+        </label>
+        <label>Siła<input type="number" name="attr_wr_min_strength" placeholder="0"/></label>
+        <label>Przeładowanie<input type="number" name="attr_wr_segments_reload" placeholder="0"/></label>
+        <label>Poręczna<input type="checkbox" name="attr_wr_hideable" value="1"></label>
+        <label>Tryby ognia
+            <select name="attr_wr_modes">
+                <option value="0">Semi</option>
+                <option value="1">Semi&Burst</option>
+                <option value="2">Semi&Auto</option>
+                <option value="3">Auto</option>
+            </select>
+        </label>
+        <label>Klasa zasięgu
+            <select name="attr_wr_range">
+                <option value="0">P</option>
+                <option value="1">PM</option>
+                <option value="2">K</option>
+                <option value="3">S</option>
+                <option value="4">ŚR</option>
+            </select>
+        </label>
+        <label>Gdzie
+            <select name="attr_wr_line">
+                <option value="0">Lewa</option>
+                <option value="1">Prawa</option>
+                <option value="2">Na sobie</option>
+                <option value="3">Plecak</option>
+                <option value="4">Schowek</option>
+            </select>
+        </label>
+        <hr/>
+    </fieldset>
+</div>

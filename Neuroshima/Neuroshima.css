@@ -15,7 +15,8 @@
 /*Configure the tab buttons*/
 .charsheet .page-wspolczynniki,
 .charsheet .page-umiejetnosci,
-.charsheet .page-inwentarz {
+.charsheet .page-inwentarz,
+.charsheet .page-ekwipunek {
     display: none;
 	border:3px solid rgba(0,0,0,0.7);
 	background: rgba(0,0,0,0);
@@ -30,7 +31,8 @@
 /* show the selected tab */
 .charsheet .sheet-tabstoggle[value="wspolczynniki"] ~ div.page-wspolczynniki,
 .charsheet .sheet-tabstoggle[value="umiejetnosci"] ~ div.page-umiejetnosci,
-.charsheet .sheet-tabstoggle[value="inwentarz"] ~ div.page-inwentarz {
+.charsheet .sheet-tabstoggle[value="inwentarz"] ~ div.page-inwentarz, 
+.charsheet .sheet-tabstoggle[value="ekwipunek"] ~ div.page-ekwipunek {
     display: block;
 }
 
@@ -761,6 +763,27 @@ table.wspolczynniki input[type=number].wsp-star-display {
 
 
 /************************** ROLL PARAMETERS ***********************/
+/******************************************************************/
+
+
+
+
+/******************************************************************/
+/*************************** EKWIPUNEK ****************************/
+.charsheet div.tbl-wr-container {
+	display: grid;
+	grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto auto auto;
+  	grid-gap: 1px;
+  	background-color: #2196F3;
+  	padding: 1px;
+}
+
+.charsheet div.tbl-wr-container > div {
+	background-color: rgba(255, 255, 255, 0.8);
+	text-align: center;
+	padding: 1px 0;
+  }
+/*************************** EKWIPUNEK ****************************/
 /******************************************************************/
 
 /******************************************************************/

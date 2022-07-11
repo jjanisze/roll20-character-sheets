@@ -60,7 +60,7 @@ function clamp(number, min, max) {
 
 /******************************************************************/
 /****************************** TABS ******************************/
-const buttonlist = ["wspolczynniki","umiejetnosci","inwentarz"];
+const buttonlist = ["wspolczynniki","umiejetnosci","inwentarz", "ekwipunek"];
     buttonlist.forEach(button => {
         on(`clicked:${button}`, function() {
             setAttrs({
@@ -696,4 +696,39 @@ on("change:specjalizacja", function() {
     });
 });
 /*************************** ROLL HANDLERS ************************/
+/******************************************************************/
+
+/******************************************************************/
+/*************************** EKWIPUNEK ****************************/
+on("change:repeating_weaponsranged:wr_line", function(eventInfo) {
+    getAttrs(["repeating_weaponsranged_wr_line"], function(v1) {
+        if( v1.repeating_weaponsranged_wr_line > 1 ) {
+            return;
+        }
+        getSectionIDs("weaponsranged", function(idarray) {
+            let items = [];
+            for(var i=0; i < idarray.length; i++) {
+                let line = `repeating_weaponsranged_${idarray[i]}_wr_line`;
+                if( eventInfo.sourceAttribute != line) {
+                    items.push(line);
+                    log(`Pushed ${line}`);
+                }
+            }
+            log(`Items: ${items}`);
+                getAttrs(items, function(v2) {
+                let dictionary = {};
+                log(v2);
+                for (const [key, line] of Object.entries(v2)) {
+                    log(`${key}:${line}`);
+                    if( line == v1.repeating_weaponsranged_wr_line ) {
+                        dictionary[key] = 2;
+                    }
+                }
+                log(dictionary);
+                setAttrs(dictionary);   
+            });
+        });
+    });
+ });
+/*************************** EKWIPUNEK ****************************/
 /******************************************************************/
