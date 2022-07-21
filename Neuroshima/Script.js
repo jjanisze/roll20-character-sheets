@@ -701,31 +701,56 @@ on("change:specjalizacja", function() {
 /******************************************************************/
 /*************************** EKWIPUNEK ****************************/
 on("change:repeating_weaponsranged:wr_line", function(eventInfo) {
-    getAttrs(["repeating_weaponsranged_wr_line"], function(v1) {
-        if( v1.repeating_weaponsranged_wr_line > 1 ) {
+    getAttrs(["repeating_weaponsranged_wr_line", "repeating_weaponsranged_wr_name", "inv_hand_left_id", "inv_hand_right_id"], function(v1) {
+        let curLine = v1.repeating_weaponsranged_wr_line;
+        let curName = v1.repeating_weaponsranged_wr_name;
+        let curSource = eventInfo.sourceAttribute;
+        let leftID = v1.inv_hand_left_id;
+        let rightID = v1.inv_hand_right_id;
+
+        // Unequip 
+        let ued = {};
+        if( curSource == leftID && curLine != 0) {
+            ued["inv_hand_left_id"] = "";
+            ued["inv_hand_left_name"] = "Pięść";
+        }
+        if( curSource == rightID && curLine != 1) {
+            ued["inv_hand_right_id"] = "";
+            ued["inv_hand_right_name"] = "Pięść";
+        }
+        if( Object.keys(ued).length > 0 ) {
+            setAttrs(ued);
+        }
+
+        if(  curLine > 1 ) {
             return;
         }
         getSectionIDs("weaponsranged", function(idarray) {
             let items = [];
             for(var i=0; i < idarray.length; i++) {
                 let line = `repeating_weaponsranged_${idarray[i]}_wr_line`;
-                if( eventInfo.sourceAttribute != line) {
+                if( curSource != line) {
                     items.push(line);
-                    log(`Pushed ${line}`);
                 }
             }
-            log(`Items: ${items}`);
-                getAttrs(items, function(v2) {
+            getAttrs(items, function(v2) {
                 let dictionary = {};
-                log(v2);
                 for (const [key, line] of Object.entries(v2)) {
-                    log(`${key}:${line}`);
                     if( line == v1.repeating_weaponsranged_wr_line ) {
                         dictionary[key] = 2;
                     }
-                }
-                log(dictionary);
-                setAttrs(dictionary);   
+            }
+            
+            // Equip logic
+            if(curLine == 0) {
+                dictionary["inv_hand_left_name"] = curName;
+                dictionary["inv_hand_left_id"] = curSource;
+            } else if (curLine == 1) {
+                dictionary["inv_hand_right_name"] = curName;
+                dictionary["inv_hand_right_id"] = curSource;
+            }
+
+            setAttrs(dictionary);   
             });
         });
     });

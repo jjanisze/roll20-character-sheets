@@ -1,5 +1,10 @@
 <div class="page-ekwipunek">
     <h1>EKWIPUNEK</h1>
+    <label>Ręka lewa<input type="text" name="attr_inv_hand_left_name" readonly/></label>
+    <label>Ręka prawa<input type="text" name="attr_inv_hand_right_name" readonly/></label>
+    <input type="text" name="attr_inv_hand_left_id" value="0">
+    <input type="text" name="attr_inv_hand_right_id" value="0">
+
     <h5>Broń Dystansowa</h5>
     <fieldset class="repeating_weaponsranged">
         <label>Nazwa <input type="text" name="attr_wr_name"/></label>
@@ -41,7 +46,7 @@
             <select name="attr_wr_line">
                 <option value="0">Lewa</option>
                 <option value="1">Prawa</option>
-                <option value="2">Na sobie</option>
+                <option value="2" selected>Na sobie</option>
                 <option value="3">Plecak</option>
                 <option value="4">Schowek</option>
             </select>
