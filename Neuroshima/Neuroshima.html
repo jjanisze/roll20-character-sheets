@@ -1243,59 +1243,411 @@
     </fieldset>
     <hr>
 </div><div class="page-ekwipunek">
-    <h1>EKWIPUNEK</h1>
-    <label>Ręka lewa<input type="text" name="attr_inv_hand_left_name" readonly/></label>
-    <label>Ręka prawa<input type="text" name="attr_inv_hand_right_name" readonly/></label>
-    <input type="text" name="attr_inv_hand_left_id" value="0">
-    <input type="text" name="attr_inv_hand_right_id" value="0">
-
-    <h5>Broń Dystansowa</h5>
+    <h1>Wyposażenie</h1>
+    <label>Ręka lewa<input type="text" name="attr_inv_hand_left_name" readonly /></label>
+    <label>Ręka prawa<input type="text" name="attr_inv_hand_right_name" /></label>
+    <input type="text" name="attr_inv_hand_left_id" value="">
+    <input type="text" name="attr_inv_hand_right_id" value="">
+    <h1>Broń Dystansowa</h1>
     <fieldset class="repeating_weaponsranged">
-        <label>Nazwa <input type="text" name="attr_wr_name"/></label>
-        <label>Magazynek<input type="number" name="attr_wr_ammo" placeholder="0"/></label>
-        <label>Pojemność<input type="number" name="attr_wr_magazine" placeholder="0"/></label>
-        <label>Na zacięcie<input type="number" name="attr_wr_misfire" placeholder="0"/></label>
-        <label>Niecelność<input type="number" name="attr_wr_bonus_accuracy" placeholder="0"/></label>
-        <label>PP<input type="number" name="attr_wr_armorpiercing" placeholder="0"/></label>
-        <label>Obrażenia
-            <select name="attr_wr_damage">
-                <option value="0">D</option>
-                <option value="1">L</option>
-                <option value="2">C</option>
-                <option value="3">K</option>
-                <option value="4">ŚR</option>
-            </select>
-        </label>
-        <label>Siła<input type="number" name="attr_wr_min_strength" placeholder="0"/></label>
-        <label>Przeładowanie<input type="number" name="attr_wr_segments_reload" placeholder="0"/></label>
-        <label>Poręczna<input type="checkbox" name="attr_wr_hideable" value="1"></label>
-        <label>Tryby ognia
-            <select name="attr_wr_modes">
-                <option value="0">Semi</option>
-                <option value="1">Semi&Burst</option>
-                <option value="2">Semi&Auto</option>
-                <option value="3">Auto</option>
-            </select>
-        </label>
-        <label>Klasa zasięgu
-            <select name="attr_wr_range">
-                <option value="0">P</option>
-                <option value="1">PM</option>
-                <option value="2">K</option>
-                <option value="3">S</option>
-                <option value="4">ŚR</option>
-            </select>
-        </label>
-        <label>Gdzie
-            <select name="attr_wr_line">
-                <option value="0">Lewa</option>
-                <option value="1">Prawa</option>
-                <option value="2" selected>Na sobie</option>
-                <option value="3">Plecak</option>
-                <option value="4">Schowek</option>
-            </select>
-        </label>
-        <hr/>
+        <div class="weaponRangedItem">
+            <div class="divTable">
+                <div class="divTableHeading">
+                    <div class="divTableRow">
+                        <div class="divTableHead">Nazwa</div>
+                        <div class="divTableHead">W magazynku</div>
+                        <div class="divTableHead">Linia oporządzenia</div>
+                    </div>
+                </div>
+                <div class="divTableBody">
+                    <div class="divTableRow">
+                        <div class="divTableCell">
+                            <input type="text" name="attr_wr_name" class="big-black-box" placeholder="----">
+                        </div>
+                        <div class="divTableCell">
+                            <input type="number" name="attr_wr_ammo" class="big-black-box" placeholder="0" />
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wr_line" class="big-black-box">
+                                <option value="0">Lewa</option>
+                                <option value="1">Prawa</option>
+                                <option value="2" selected>Na sobie</option>
+                                <option value="3">Plecak</option>
+                                <option value="4">Schowek</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="divTable">
+                <div class="divTableHeading">
+                    <div class="divTableRow">
+                        <div class="divTableHead">
+                            <h5>Zacina się na</h5>
+                        </div>
+                        <div class="divTableHead">
+                            <h5>Bonus do celności</h5>
+                        </div>
+                        <div class="divTableHead">
+                            <h5>Zadawanie obrażenia</h5>
+                        </div>
+                        <div class="divTableHead">
+                            <h5>Punkty przebicia</h5>
+                        </div>
+                        <div class="divTableHead">
+                            <h5>Wymagana siła</h5>
+                        </div>
+                        <div class="divTableHead">
+                            <h5>Segmenty przeładowania</h5>
+                        </div>
+                        <div class="divTableHead">
+                            <h5>Poręczna</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="divTableBody">
+                    <div class="divTableRow">
+                        <div class="divTableCell">
+                            <input type="number" name="attr_wr_misfire" class="big-black-box" placeholder="--" />
+                        </div>
+                        <div class="divTableCell">
+                            <input type="number" name="attr_wr_bonus_accuracy" class="big-black-box" placeholder="--" />
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wr_damage" class="big-black-box">
+                                <option value="0">D</option>
+                                <option value="1">L</option>
+                                <option value="2">C</option>
+                                <option value="3">K</option>
+                                <option value="4">ŚR</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <input type="number" name="attr_wr_armorpiercing" class="big-black-box" placeholder="--" />
+                        </div>
+                        <div class="divTableCell">
+                            <input type="number" name="attr_wr_min_strength" class="big-black-box" placeholder="--" />
+                        </div>
+                        <div class="divTableCell">
+                            <input type="number" name="attr_wr_segments_reload" class="big-black-box"
+                                placeholder="--" />
+                        </div>
+                        <div class="divTableCell">
+                            <input type="checkbox" name="attr_wr_hideable" class="big-black-box" value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="divTable">
+                <div class="divTableHeading">
+                    <div class="divTableRow">
+                        <div class="divTableHead">
+                            <h5>Tryby</h5>
+                        </div>
+                        <div class="divTableHead">
+                            <h5>Zasięg</h5>
+                        </div>
+                        <div class="divTableHead">
+                            <h5>Kaliber</h5>
+                        </div>
+                        <div class="divTableHead">
+                            <h5>Pojemność</h5>
+                        </div>
+                        <div class="divTableHead">
+                            <h5>Gram pusta</h5>
+                        </div>
+                        <div class="divTableHead">
+                            <h5>Gram pocisk</h5>
+                        </div>
+                        <div class="divTableHead">
+                            <h5>Gram suma</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="divTableBody">
+                    <div class="divTableRow">
+                        <div class="divTableCell">
+                            <select name="attr_wr_modes" class="big-black-box">
+                                <option value="0">Semi</option>
+                                <option value="1">Semi&Burst</option>
+                                <option value="2">Semi&Auto</option>
+                                <option value="3">Auto</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wr_range" class="big-black-box">
+                                <option value="0">P</option>
+                                <option value="1">PM</option>
+                                <option value="2">K</option>
+                                <option value="3">S</option>
+                                <option value="4">ŚR</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell"><input type="text" name="attr_wr_caliber" class="big-black-box"
+                                placeholder="--" /></div>
+                        <div class="divTableCell"><input type="number" name="attr_wr_magazine" class="big-black-box"
+                                placeholder="0" /></div>
+                        <div class="divTableCell"><input type="number" name="attr_wr_empty_weight" class="big-black-box"
+                                placeholder="--" /></div>
+                        <div class="divTableCell"><input type="number" name="attr_wr_bullet_weight"
+                                class="big-black-box" placeholder="--" /></div>
+                        <div class="divTableCell"><input type="number" name="attr_wr_total_weight" class="big-black-box"
+                                placeholder="0" readonly /></div>
+                    </div>
+                </div>
+            </div>
+            <textarea name="attr_wr_notes" class="effect">Reguły dodatkowe</textarea>
+        </div>
+    </fieldset>
+
+    <h1>Broń Ręczna</h1>
+    <fieldset class="repeating_weaponsmelee">
+        <div class="weaponMeleeItem">
+            <div class="divTable">
+                <div class="divTableHeading">
+                    <div class="divTableRow">
+                        <div class="divTableHead">Nazwa</div>
+                        <div class="divTableHead">Wymagana siła</div>
+                        <div class="divTableHead">Gramy</div>
+                        <div class="divTableHead">Linia oporządzenia</div>
+                    </div>
+                </div>
+                <div class="divTableBody">
+                    <div class="divTableRow">
+                        <div class="divTableCell">
+                            <input type="text" name="attr_wm_name" class="big-black-box" />
+                        </div>
+                        <div class="divTableCell">
+                            <input type="number" name="attr_wm_req_strength" class="big-black-box" />
+                        </div>
+                        <div class="divTableCell">
+                            <input type="number" name="attr_wm_weight" class="big-black-box" />
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_line" class="big-black-box">
+                                <option value="0">Lewa</option>
+                                <option value="1">Prawa</option>
+                                <option value="2" selected>Na sobie</option>
+                                <option value="3">Plecak</option>
+                                <option value="4">Schowek</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="divTable">
+                <div class="divTableHeading">
+                    <div class="divTableRow">
+                        <div class="divTableHead">+ZR atak</div>
+                        <div class="divTableHead">+ZR obrona</div>
+                        <div class="divTableHead">+ZR wielu przeciwników</div>
+                        <div class="divTableHead">Obuchowa</div>
+                    </div>
+                </div>
+                <div class="divTableBody">
+                    <div class="divTableRow">
+                        <div class="divTableCell">
+                            <input type="number" name="attr_wm_bonus_attack" class="big-black-box" />
+                        </div>
+                        <div class="divTableCell">
+                            <input type="number" name="attr_wm_bonus_defense" class="big-black-box" />
+                        </div>
+                        <div class="divTableCell">
+                            <input type="number" name="attr_wm_bonus_multiple" class="big-black-box" />
+                        </div>
+                        <div class="divTableCell">
+                            <input type="checkbox" name="attr_wm_blunt" value="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="divTable">
+                <div class="divTableHeading">
+                    <div class="divTableRow">
+                        <div class="divTableHead">Próg siły</div>
+                        <div class="divTableHead">1 sukces</div>
+                        <div class="divTableHead">2 sukcesy</div>
+                        <div class="divTableHead">3 sukcesy</div>
+                    </div>
+                </div>
+                <div class="divTableBody">
+                    <div class="divTableRow">
+                        <div class="divTableCell">
+                            Poniżej <input type="number" name="attr_wm_dmg_thresh_0" class="big-black-box"/>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_0_a" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_0_b" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_0_c" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="divTableRow">
+                        <div class="divTableCell">
+                            Poniżej <input type="number" name="attr_wm_dmg_thresh_1" class="big-black-box"/>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_1_a" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_1_b" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_1_c" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="divTableRow">
+                        <div class="divTableCell">
+                            Poniżej <input type="number" name="attr_wm_dmg_thresh_2" class="big-black-box"/>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_2_a" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_2_b" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_2_c" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="divTableRow">
+                        <div class="divTableCell">
+                            Poniżej <input type="number" name="attr_wm_dmg_thresh_3" class="big-black-box"/>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_3_a" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_3_b" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_3_c" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="divTableRow">
+                        <div class="divTableCell">
+                            Poniżej <input type="number" name="attr_wm_dmg_thresh_4" class="big-black-box"/>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_4_a" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_4_b" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_4_c" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="divTableRow">
+                        <div class="divTableCell">
+                            Od <input type="number" name="attr_wm_dmg_thresh_5" class="big-black-box"/>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_5_a" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_5_b" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_5_c" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
     </fieldset>
 </div></div></div><script type="text/worker">/* ===== PARAMETERS ==========
 destinations = the name of the attribute that stores the total quantity
@@ -1975,7 +2327,6 @@ toggleList.forEach(function(button) {
 });
 
 on("change:specjalizacja", function() {
-    log("Changed!")  
     getAttrs(["specjalizacja"], function(v) {
         const grpid = clamp((parseInt(v.specjalizacja)||0), 0, 4);
         const specgroups = spec2grp[grpid];
@@ -1999,6 +2350,9 @@ on("change:specjalizacja", function() {
 
 /******************************************************************/
 /*************************** EKWIPUNEK ****************************/
+const UNEQUIP_NAME = "Pięść";
+const UNEQUIP_ID = "";
+
 on("change:repeating_weaponsranged:wr_line", function(eventInfo) {
     getAttrs(["repeating_weaponsranged_wr_line", "repeating_weaponsranged_wr_name", "inv_hand_left_id", "inv_hand_right_id"], function(v1) {
         let curLine = v1.repeating_weaponsranged_wr_line;
@@ -2010,12 +2364,12 @@ on("change:repeating_weaponsranged:wr_line", function(eventInfo) {
         // Unequip 
         let ued = {};
         if( curSource == leftID && curLine != 0) {
-            ued["inv_hand_left_id"] = "";
-            ued["inv_hand_left_name"] = "Pięść";
+            ued["inv_hand_left_id"] = UNEQUIP_ID;
+            ued["inv_hand_left_name"] = UNEQUIP_NAME;
         }
         if( curSource == rightID && curLine != 1) {
-            ued["inv_hand_right_id"] = "";
-            ued["inv_hand_right_name"] = "Pięść";
+            ued["inv_hand_right_id"] = UNEQUIP_ID;
+            ued["inv_hand_right_name"] = UNEQUIP_NAME;
         }
         if( Object.keys(ued).length > 0 ) {
             setAttrs(ued);
@@ -2052,6 +2406,17 @@ on("change:repeating_weaponsranged:wr_line", function(eventInfo) {
             setAttrs(dictionary);   
             });
         });
+    });
+ });
+
+ // Weight calculations
+ on("change:repeating_weaponsranged:wr_ammo change:repeating_weaponsranged:wr_empty_weight", (eventInfo) => {
+    getAttrs(["repeating_weaponsranged_wr_ammo", "repeating_weaponsranged_wr_empty_weight", "repeating_weaponsranged_wr_bullet_weight"], (v) => {
+        let ammo = (parseInt(v.repeating_weaponsranged_wr_ammo)||0);
+        let empty_weight = (parseInt(v.repeating_weaponsranged_wr_empty_weight)||0);
+        let bullet_weight = (parseInt(v.repeating_weaponsranged_wr_bullet_weight)||0);
+        let total_weight = empty_weight + ammo*bullet_weight;
+        setAttrs({repeating_weaponsranged_wr_total_weight:total_weight});
     });
  });
 /*************************** EKWIPUNEK ****************************/

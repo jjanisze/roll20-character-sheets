@@ -676,7 +676,6 @@ toggleList.forEach(function(button) {
 });
 
 on("change:specjalizacja", function() {
-    log("Changed!")  
     getAttrs(["specjalizacja"], function(v) {
         const grpid = clamp((parseInt(v.specjalizacja)||0), 0, 4);
         const specgroups = spec2grp[grpid];
@@ -700,6 +699,9 @@ on("change:specjalizacja", function() {
 
 /******************************************************************/
 /*************************** EKWIPUNEK ****************************/
+const UNEQUIP_NAME = "Pięść";
+const UNEQUIP_ID = "";
+
 on("change:repeating_weaponsranged:wr_line", function(eventInfo) {
     getAttrs(["repeating_weaponsranged_wr_line", "repeating_weaponsranged_wr_name", "inv_hand_left_id", "inv_hand_right_id"], function(v1) {
         let curLine = v1.repeating_weaponsranged_wr_line;
@@ -711,12 +713,12 @@ on("change:repeating_weaponsranged:wr_line", function(eventInfo) {
         // Unequip 
         let ued = {};
         if( curSource == leftID && curLine != 0) {
-            ued["inv_hand_left_id"] = "";
-            ued["inv_hand_left_name"] = "Pięść";
+            ued["inv_hand_left_id"] = UNEQUIP_ID;
+            ued["inv_hand_left_name"] = UNEQUIP_NAME;
         }
         if( curSource == rightID && curLine != 1) {
-            ued["inv_hand_right_id"] = "";
-            ued["inv_hand_right_name"] = "Pięść";
+            ued["inv_hand_right_id"] = UNEQUIP_ID;
+            ued["inv_hand_right_name"] = UNEQUIP_NAME;
         }
         if( Object.keys(ued).length > 0 ) {
             setAttrs(ued);
@@ -753,6 +755,17 @@ on("change:repeating_weaponsranged:wr_line", function(eventInfo) {
             setAttrs(dictionary);   
             });
         });
+    });
+ });
+
+ // Weight calculations
+ on("change:repeating_weaponsranged:wr_ammo change:repeating_weaponsranged:wr_empty_weight", (eventInfo) => {
+    getAttrs(["repeating_weaponsranged_wr_ammo", "repeating_weaponsranged_wr_empty_weight", "repeating_weaponsranged_wr_bullet_weight"], (v) => {
+        let ammo = (parseInt(v.repeating_weaponsranged_wr_ammo)||0);
+        let empty_weight = (parseInt(v.repeating_weaponsranged_wr_empty_weight)||0);
+        let bullet_weight = (parseInt(v.repeating_weaponsranged_wr_bullet_weight)||0);
+        let total_weight = empty_weight + ammo*bullet_weight;
+        setAttrs({repeating_weaponsranged_wr_total_weight:total_weight});
     });
  });
 /*************************** EKWIPUNEK ****************************/

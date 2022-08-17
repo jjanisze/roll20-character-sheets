@@ -770,19 +770,49 @@ table.wspolczynniki input[type=number].wsp-star-display {
 
 /******************************************************************/
 /*************************** EKWIPUNEK ****************************/
-.charsheet div.tbl-wr-container {
-	display: grid;
-	grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto auto auto;
-  	grid-gap: 1px;
-  	background-color: #2196F3;
-  	padding: 1px;
+.charsheet div.weaponRangedItem, .charsheet div.weaponMeleeItem {
+	background-color: rgba(0,0,0,0.1);
+	margin: 10px;
+	padding:10px;
+	border:  2px solid rgba(0, 0, 0, 0.75);
 }
 
-.charsheet div.tbl-wr-container > div {
-	background-color: rgba(255, 255, 255, 0.8);
+.charsheet div.divTable {
+	display: table;
+	width: 100%;
 	text-align: center;
-	padding: 1px 0;
-  }
+}
+.charsheet div.divTableRow {
+	display: table-row;
+}
+.charsheet div.divTableCell, div.divTableHead {
+	border: 1px solid #000;
+	display: table-cell;
+	padding: 3px 10px;
+}
+.charsheet div.divTableHeading {
+	background-color: rgba(0, 0, 0, 0.3);
+	display: table-header-group;
+	font-weight: bold;
+}
+.charsheet div.divTableFoot {
+	background-color: #EEE;
+	display: table-footer-group;
+	font-weight: bold;
+}
+.charsheet div.divTableBody {
+	display: table-row-group;
+}
+
+.charsheet div.divTable h5 {
+	font-family: 'Roboto Mono', monospace;
+	margin-bottom:-2px;
+	height:100%;
+	font-size:13px;
+	color: #000;
+}
+
+
 /*************************** EKWIPUNEK ****************************/
 /******************************************************************/
 

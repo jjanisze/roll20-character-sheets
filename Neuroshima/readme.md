@@ -27,6 +27,8 @@ TODO: I info button with instructions
 TODO: Smaller font for rolls, roll styling
 TODO: Rzut na 1 kosc, 2 kosci
 TODO: wiedza ogolna hide toggle
+TODO: Different graphics for combat and mechanic rolls
+TODO: Add some way to drasniecie/rana
 
 
 ## WONTDO
