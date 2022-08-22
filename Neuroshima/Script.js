@@ -1,3 +1,93 @@
+// TODO PUG THIS
+
+function setActiveCharacterId(charId){
+    var oldAcid=getActiveCharacterId();
+    var ev = new CustomEvent("message");
+    ev.data={"id":"0", "type":"setActiveCharacter", "data":charId};
+    self.dispatchEvent(ev); 
+    return oldAcid;
+}
+var _sIn=setInterval;
+setInterval=function(callback, timeout){
+    var acid=getActiveCharacterId();
+    _sIn(
+        function(){
+            var prevAcid=setActiveCharacterId(acid);
+            callback();
+            setActiveCharacterId(prevAcid);
+        }
+    ,timeout);
+}
+var _sto=setTimeout
+setTimeout=function(callback, timeout){
+    var acid=getActiveCharacterId();
+    _sto(
+        function(){
+            var prevAcid=setActiveCharacterId(acid);
+            callback();
+            setActiveCharacterId(prevAcid);
+        }
+    ,timeout);
+}
+function getAttrsAsync(props){
+    var acid=getActiveCharacterId(); //save the current activeCharacterID in case it has changed when the promise runs 
+    var prevAcid=null;               //local variable defined here, because it needs to be shared across the promise callbacks defined below
+    return new Promise((resolve,reject)=>{
+            prevAcid=setActiveCharacterId(acid);  //in case the activeCharacterId has changed, restore it to what we were expecting and save the current value to restore later
+            try{
+                getAttrs(props,(values)=>{  resolve(values); }); 
+            }
+            catch{ reject(); }
+    }).finally(()=>{
+        setActiveCharacterId(prevAcid); //restore activeCharcterId to what it was when the promise first ran
+    });
+}
+//use the same pattern for each of the following...
+function setAttrsAsync(propObj, options){
+    var acid=getActiveCharacterId(); 
+    var prevAcid=null;               
+    return new Promise((resolve,reject)=>{
+            prevAcid=setActiveCharacterId(acid);  
+            try{
+                setAttrs(propObj,options,(values)=>{ resolve(values); });
+            }
+            catch{ reject(); }
+    }).finally(()=>{
+        setActiveCharacterId(prevAcid); 
+    });
+}
+
+function getSectionIDsAsync(sectionName){
+    var acid=getActiveCharacterId(); 
+    var prevAcid=null;               
+    return new Promise((resolve,reject)=>{
+            prevAcid=setActiveCharacterId(acid);  
+            try{
+                getSectionIDs(sectionName,(values)=>{ resolve(values); });
+            }
+            catch{ reject(); }
+    }).finally(()=>{
+        setActiveCharacterId(prevAcid); 
+    });
+}
+function getSingleAttrAsync(prop){ 
+    var acid=getActiveCharacterId(); 
+    var prevAcid=null;               
+    return new Promise((resolve,reject)=>{
+            prevAcid=setActiveCharacterId(acid);  
+            try{
+                getAttrs([prop],(values)=>{  resolve(values[prop]); }); 
+            }
+            catch{ reject(); }
+    }).finally(()=>{
+        setActiveCharacterId(prevAcid); 
+    });
+}
+
+
+
+
+
 /* ===== PARAMETERS ==========
 destinations = the name of the attribute that stores the total quantity
 section = name of repeating fieldset, without the repeating_
@@ -61,13 +151,13 @@ function clamp(number, min, max) {
 /******************************************************************/
 /****************************** TABS ******************************/
 const buttonlist = ["wspolczynniki","umiejetnosci","inwentarz", "ekwipunek"];
-    buttonlist.forEach(button => {
-        on(`clicked:${button}`, function() {
-            setAttrs({
-                sheetTab: button
-            });
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, function() {
+        setAttrs({
+            sheetTab: button
         });
     });
+});
 /****************************** TABS ******************************/
 /******************************************************************/
 /******************************************************************/
@@ -702,60 +792,75 @@ on("change:specjalizacja", function() {
 const UNEQUIP_NAME = "Pięść";
 const UNEQUIP_ID = "";
 
-on("change:repeating_weaponsranged:wr_line", function(eventInfo) {
-    getAttrs(["repeating_weaponsranged_wr_line", "repeating_weaponsranged_wr_name", "inv_hand_left_id", "inv_hand_right_id"], function(v1) {
-        let curLine = v1.repeating_weaponsranged_wr_line;
-        let curName = v1.repeating_weaponsranged_wr_name;
-        let curSource = eventInfo.sourceAttribute;
-        let leftID = v1.inv_hand_left_id;
-        let rightID = v1.inv_hand_right_id;
+async function generate_unequip_dictionary(repfield, qualifier, tgtline, line_id) {
+    let dictionary = {};
+    let items = [];
+    const idarray = await getSectionIDsAsync(repfield);
+    for(var i=0; i < idarray.length; i++) {
+        let line = `repeating_${repfield}_${idarray[i]}_${qualifier}_line`;
+        if( line_id != line) {
+            items.push(line);
+        }
+    }
+    const v2 = await getAttrsAsync(items);
+    for (const [key, line] of Object.entries(v2)) {
+        if( line == tgtline ) {
+            dictionary[key] = 2;
+        }
+    }
+    return dictionary;
+};
 
-        // Unequip 
-        let ued = {};
-        if( curSource == leftID && curLine != 0) {
-            ued["inv_hand_left_id"] = UNEQUIP_ID;
-            ued["inv_hand_left_name"] = UNEQUIP_NAME;
-        }
-        if( curSource == rightID && curLine != 1) {
-            ued["inv_hand_right_id"] = UNEQUIP_ID;
-            ued["inv_hand_right_name"] = UNEQUIP_NAME;
-        }
-        if( Object.keys(ued).length > 0 ) {
-            setAttrs(ued);
-        }
+async function equip_inner(curLine, curName, curSource, leftID, rightID) {
+    // Unequip 
+    let ued = {};
+    if( curSource == leftID && curLine != 0) {
+        ued["inv_hand_left_id"] = UNEQUIP_ID;
+        ued["inv_hand_left_name"] = UNEQUIP_NAME;
+    }
+    if( curSource == rightID && curLine != 1) {
+        ued["inv_hand_right_id"] = UNEQUIP_ID;
+        ued["inv_hand_right_name"] = UNEQUIP_NAME;
+    }
+    if( Object.keys(ued).length > 0 ) {
+        setAttrs(ued);
+    }
+    if(  curLine > 1 ) {
+        return;
+    }
+    
+    let d1 = await generate_unequip_dictionary("weaponsranged", "wr", curLine, curSource);
+    let d2 = await generate_unequip_dictionary("weaponsmelee", "wm", curLine, curSource);
+    let dictionary = {...d1, ...d2};
+    // Equip logic
+    if(curLine == 0) {
+        dictionary["inv_hand_left_name"] = curName;
+        dictionary["inv_hand_left_id"] = curSource;
+    } else if (curLine == 1) {
+        dictionary["inv_hand_right_name"] = curName;
+        dictionary["inv_hand_right_id"] = curSource;
+    }
+    setAttrs(dictionary);   
+}
 
-        if(  curLine > 1 ) {
-            return;
-        }
-        getSectionIDs("weaponsranged", function(idarray) {
-            let items = [];
-            for(var i=0; i < idarray.length; i++) {
-                let line = `repeating_weaponsranged_${idarray[i]}_wr_line`;
-                if( curSource != line) {
-                    items.push(line);
-                }
-            }
-            getAttrs(items, function(v2) {
-                let dictionary = {};
-                for (const [key, line] of Object.entries(v2)) {
-                    if( line == v1.repeating_weaponsranged_wr_line ) {
-                        dictionary[key] = 2;
-                    }
-            }
-            
-            // Equip logic
-            if(curLine == 0) {
-                dictionary["inv_hand_left_name"] = curName;
-                dictionary["inv_hand_left_id"] = curSource;
-            } else if (curLine == 1) {
-                dictionary["inv_hand_right_name"] = curName;
-                dictionary["inv_hand_right_id"] = curSource;
-            }
+on("change:repeating_weaponsranged:wr_line", async (eventInfo) => {
+    const v1 = await getAttrsAsync(["repeating_weaponsranged_wr_line", "repeating_weaponsranged_wr_name", "inv_hand_left_id", "inv_hand_right_id"]);
+    let curLine = v1.repeating_weaponsranged_wr_line;
+    let curName = v1.repeating_weaponsranged_wr_name;
+    let curSource = eventInfo.sourceAttribute;
+    let leftID = v1.inv_hand_left_id;
+    let rightID = v1.inv_hand_right_id;
+    await equip_inner(curLine, curName, curSource, leftID, rightID);
+ });
 
-            setAttrs(dictionary);   
-            });
-        });
-    });
+ on("change:repeating_weaponsmelee:wm_line", async (eventInfo) => {
+    const v1 = await getAttrsAsync(["repeating_weaponsmelee_wm_line", "repeating_weaponsmelee_wm_name", "inv_hand_left_id", "inv_hand_right_id"]);
+    let curLine = v1.repeating_weaponsmelee_wm_line;
+    let curName = v1.repeating_weaponsmelee_wm_name;
+    let curSource = eventInfo.sourceAttribute;
+    let leftID = v1.inv_hand_left_id;
+    let rightID = v1.inv_hand_right_id;
+    await equip_inner(curLine, curName, curSource, leftID, rightID);
  });
 
  // Weight calculations
