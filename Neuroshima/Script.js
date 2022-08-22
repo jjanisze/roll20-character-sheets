@@ -1,93 +1,3 @@
-// TODO PUG THIS
-
-function setActiveCharacterId(charId){
-    var oldAcid=getActiveCharacterId();
-    var ev = new CustomEvent("message");
-    ev.data={"id":"0", "type":"setActiveCharacter", "data":charId};
-    self.dispatchEvent(ev); 
-    return oldAcid;
-}
-var _sIn=setInterval;
-setInterval=function(callback, timeout){
-    var acid=getActiveCharacterId();
-    _sIn(
-        function(){
-            var prevAcid=setActiveCharacterId(acid);
-            callback();
-            setActiveCharacterId(prevAcid);
-        }
-    ,timeout);
-}
-var _sto=setTimeout
-setTimeout=function(callback, timeout){
-    var acid=getActiveCharacterId();
-    _sto(
-        function(){
-            var prevAcid=setActiveCharacterId(acid);
-            callback();
-            setActiveCharacterId(prevAcid);
-        }
-    ,timeout);
-}
-function getAttrsAsync(props){
-    var acid=getActiveCharacterId(); //save the current activeCharacterID in case it has changed when the promise runs 
-    var prevAcid=null;               //local variable defined here, because it needs to be shared across the promise callbacks defined below
-    return new Promise((resolve,reject)=>{
-            prevAcid=setActiveCharacterId(acid);  //in case the activeCharacterId has changed, restore it to what we were expecting and save the current value to restore later
-            try{
-                getAttrs(props,(values)=>{  resolve(values); }); 
-            }
-            catch{ reject(); }
-    }).finally(()=>{
-        setActiveCharacterId(prevAcid); //restore activeCharcterId to what it was when the promise first ran
-    });
-}
-//use the same pattern for each of the following...
-function setAttrsAsync(propObj, options){
-    var acid=getActiveCharacterId(); 
-    var prevAcid=null;               
-    return new Promise((resolve,reject)=>{
-            prevAcid=setActiveCharacterId(acid);  
-            try{
-                setAttrs(propObj,options,(values)=>{ resolve(values); });
-            }
-            catch{ reject(); }
-    }).finally(()=>{
-        setActiveCharacterId(prevAcid); 
-    });
-}
-
-function getSectionIDsAsync(sectionName){
-    var acid=getActiveCharacterId(); 
-    var prevAcid=null;               
-    return new Promise((resolve,reject)=>{
-            prevAcid=setActiveCharacterId(acid);  
-            try{
-                getSectionIDs(sectionName,(values)=>{ resolve(values); });
-            }
-            catch{ reject(); }
-    }).finally(()=>{
-        setActiveCharacterId(prevAcid); 
-    });
-}
-function getSingleAttrAsync(prop){ 
-    var acid=getActiveCharacterId(); 
-    var prevAcid=null;               
-    return new Promise((resolve,reject)=>{
-            prevAcid=setActiveCharacterId(acid);  
-            try{
-                getAttrs([prop],(values)=>{  resolve(values[prop]); }); 
-            }
-            catch{ reject(); }
-    }).finally(()=>{
-        setActiveCharacterId(prevAcid); 
-    });
-}
-
-
-
-
-
 /* ===== PARAMETERS ==========
 destinations = the name of the attribute that stores the total quantity
 section = name of repeating fieldset, without the repeating_
@@ -792,6 +702,7 @@ on("change:specjalizacja", function() {
 const UNEQUIP_NAME = "Pięść";
 const UNEQUIP_ID = "";
 
+/*
 async function generate_unequip_dictionary(repfield, qualifier, tgtline, line_id) {
     let dictionary = {};
     let items = [];
@@ -810,8 +721,48 @@ async function generate_unequip_dictionary(repfield, qualifier, tgtline, line_id
     }
     return dictionary;
 };
+*/
+/*
+function generate_unequip_dictionary(repfield, qualifier, tgtline, line_id, callback) {
+    getSectionIDs(repfield, idarray => {
+      const items = idarray.map(id => `repeating_${repfield}_${id}_${qualifier}_line`)
+        .filter(line => line != line_id);
+      getAttrs(items, values => {
+          const dict = Object.entries(values)
+            .map(([key, val]) => val == tgtline)
+            .reduce((obj, [key, val]) => { obj[key] = 2; return obj; }, {});
+          callback(dictionary);
+      });
+    });
+  };
+*/
 
-async function equip_inner(curLine, curName, curSource, leftID, rightID) {
+
+// Big thanks to Riernar for this recursive magic!
+function generate_unequip_dictionary(tgtline, line_id, name_qualifier_pairs, callback) {
+    const pairs = [...name_qualifier_pairs];
+    const attributes = [];
+    const helper_callback = function(idarray) {
+      const [name, qualifier] = pairs.pop();
+      const items = idarray.map(id => `repeating_${name}_${id}_${qualifier}_line`)
+        .filter(line => line != line_id);
+      attributes.push(...items);
+      if (pairs.length > 0) {
+        getSectionIDs(pairs[pairs.length - 1][0], helper_callback);
+      } else {
+        getAttrs(attributes, values => {
+          const dictionary = Object.entries(values)
+            .filter(([key, val]) => val == tgtline)
+            .reduce((obj, [key, val]) => { obj[key] = 2; return obj; }, {});
+          callback(dictionary);
+        });
+      }
+    }
+    getSectionIDs(pairs[pairs.length - 1][0], helper_callback);
+  };
+
+
+function equip_inner(curLine, curName, curSource, leftID, rightID) {
     // Unequip 
     let ued = {};
     if( curSource == leftID && curLine != 0) {
@@ -829,39 +780,90 @@ async function equip_inner(curLine, curName, curSource, leftID, rightID) {
         return;
     }
     
-    let d1 = await generate_unequip_dictionary("weaponsranged", "wr", curLine, curSource);
-    let d2 = await generate_unequip_dictionary("weaponsmelee", "wm", curLine, curSource);
-    let dictionary = {...d1, ...d2};
-    // Equip logic
-    if(curLine == 0) {
-        dictionary["inv_hand_left_name"] = curName;
-        dictionary["inv_hand_left_id"] = curSource;
-    } else if (curLine == 1) {
-        dictionary["inv_hand_right_name"] = curName;
-        dictionary["inv_hand_right_id"] = curSource;
-    }
-    setAttrs(dictionary);   
+    generate_unequip_dictionary(
+        curLine, curSource,
+        [["weaponsranged", "wr"], ["weaponsmelee", "wm"]],
+        (dictionary) => {
+            // Equip logic
+            if(curLine == 0) {
+                dictionary["inv_hand_left_name"] = curName;
+                dictionary["inv_hand_left_id"] = curSource;
+            } else if (curLine == 1) {
+                dictionary["inv_hand_right_name"] = curName;
+                dictionary["inv_hand_right_id"] = curSource;
+            }
+            setAttrs(dictionary); 
+      });
 }
 
 on("change:repeating_weaponsranged:wr_line", async (eventInfo) => {
-    const v1 = await getAttrsAsync(["repeating_weaponsranged_wr_line", "repeating_weaponsranged_wr_name", "inv_hand_left_id", "inv_hand_right_id"]);
-    let curLine = v1.repeating_weaponsranged_wr_line;
-    let curName = v1.repeating_weaponsranged_wr_name;
-    let curSource = eventInfo.sourceAttribute;
-    let leftID = v1.inv_hand_left_id;
-    let rightID = v1.inv_hand_right_id;
-    await equip_inner(curLine, curName, curSource, leftID, rightID);
+    const v1 = getAttrs(["repeating_weaponsranged_wr_line", "repeating_weaponsranged_wr_name", "inv_hand_left_id", "inv_hand_right_id"], (v1) => {
+        let curLine = v1.repeating_weaponsranged_wr_line;
+        let curName = v1.repeating_weaponsranged_wr_name;
+        let curSource = eventInfo.sourceAttribute;
+        let leftID = v1.inv_hand_left_id;
+        let rightID = v1.inv_hand_right_id;
+        equip_inner(curLine, curName, curSource, leftID, rightID);
+    });
  });
 
  on("change:repeating_weaponsmelee:wm_line", async (eventInfo) => {
-    const v1 = await getAttrsAsync(["repeating_weaponsmelee_wm_line", "repeating_weaponsmelee_wm_name", "inv_hand_left_id", "inv_hand_right_id"]);
-    let curLine = v1.repeating_weaponsmelee_wm_line;
-    let curName = v1.repeating_weaponsmelee_wm_name;
-    let curSource = eventInfo.sourceAttribute;
-    let leftID = v1.inv_hand_left_id;
-    let rightID = v1.inv_hand_right_id;
-    await equip_inner(curLine, curName, curSource, leftID, rightID);
+    const v1 = getAttrs(["repeating_weaponsmelee_wm_line", "repeating_weaponsmelee_wm_name", "inv_hand_left_id", "inv_hand_right_id"], (v1) => {
+        let curLine = v1.repeating_weaponsmelee_wm_line;
+        let curName = v1.repeating_weaponsmelee_wm_name;
+        let curSource = eventInfo.sourceAttribute;
+        let leftID = v1.inv_hand_left_id;
+        let rightID = v1.inv_hand_right_id;
+        equip_inner(curLine, curName, curSource, leftID, rightID);
+    });
  });
+
+ // Add fists
+function addFists() {
+    var newrowid = generateRowID();
+    var newrowattrs = {};
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_name"] = "testnewrow";
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_req_strength"] = 0;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_weight"] = 0;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_line"] = 2;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_bonus_attack"] = 0;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_bonus_defense"] = 0;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_bonus_multiple"] = 0;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_bonus_blunt"] = 1;
+
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0"] = 10;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0_a"] = 0;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0_b"] = 0;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0_c"] = 0;
+
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1"] = 12;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1_a"] = 0;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1_b"] = 0;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1_c"] = 1;
+
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2"] = 14;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2_a"] = 0;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2_b"] = 1;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2_c"] = 1;
+
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3"] = 16;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3_a"] = 1;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3_b"] = 1;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3_c"] = 1;
+
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4"] = 18;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4_a"] = 1;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4_b"] = 1;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4_c"] = 1;
+
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5"] = 19;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5_a"] = 1;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5_b"] = 1;
+    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5_c"] = 1;
+
+    setAttrs(newrowattrs);
+} 
+
 
  // Weight calculations
  on("change:repeating_weaponsranged:wr_ammo change:repeating_weaponsranged:wr_empty_weight", (eventInfo) => {
