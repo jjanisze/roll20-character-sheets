@@ -762,15 +762,15 @@ function generate_unequip_dictionary(tgtline, line_id, name_qualifier_pairs, cal
   };
 
 
-function equip_inner(curLine, curName, curSource, leftID, rightID) {
+function equip_inner(curLine, curName, curSource, leftID, rightID, fistsID) {
     // Unequip 
     let ued = {};
     if( curSource == leftID && curLine != 0) {
-        ued["inv_hand_left_id"] = UNEQUIP_ID;
+        ued["inv_hand_left_id"] = fistsID;
         ued["inv_hand_left_name"] = UNEQUIP_NAME;
     }
     if( curSource == rightID && curLine != 1) {
-        ued["inv_hand_right_id"] = UNEQUIP_ID;
+        ued["inv_hand_right_id"] = fistsID;
         ued["inv_hand_right_name"] = UNEQUIP_NAME;
     }
     if( Object.keys(ued).length > 0 ) {
@@ -797,72 +797,98 @@ function equip_inner(curLine, curName, curSource, leftID, rightID) {
 }
 
 on("change:repeating_weaponsranged:wr_line", async (eventInfo) => {
-    const v1 = getAttrs(["repeating_weaponsranged_wr_line", "repeating_weaponsranged_wr_name", "inv_hand_left_id", "inv_hand_right_id"], (v1) => {
+    const v1 = getAttrs(["repeating_weaponsranged_wr_line", "repeating_weaponsranged_wr_name", "inv_hand_left_id", "inv_hand_right_id", "global_fists_id"], (v1) => {
         let curLine = v1.repeating_weaponsranged_wr_line;
         let curName = v1.repeating_weaponsranged_wr_name;
         let curSource = eventInfo.sourceAttribute;
         let leftID = v1.inv_hand_left_id;
         let rightID = v1.inv_hand_right_id;
-        equip_inner(curLine, curName, curSource, leftID, rightID);
+        let fistsID = v1.global_fists_id;
+        equip_inner(curLine, curName, curSource, leftID, rightID, fistsID);
     });
  });
 
  on("change:repeating_weaponsmelee:wm_line", async (eventInfo) => {
-    const v1 = getAttrs(["repeating_weaponsmelee_wm_line", "repeating_weaponsmelee_wm_name", "inv_hand_left_id", "inv_hand_right_id"], (v1) => {
+    const v1 = getAttrs(["repeating_weaponsmelee_wm_line", "repeating_weaponsmelee_wm_name", "inv_hand_left_id", "inv_hand_right_id", "global_fists_id"], (v1) => {
         let curLine = v1.repeating_weaponsmelee_wm_line;
         let curName = v1.repeating_weaponsmelee_wm_name;
         let curSource = eventInfo.sourceAttribute;
         let leftID = v1.inv_hand_left_id;
         let rightID = v1.inv_hand_right_id;
-        equip_inner(curLine, curName, curSource, leftID, rightID);
+        let fistsID = v1.global_fists_id;
+        equip_inner(curLine, curName, curSource, leftID, rightID, fistsID);
     });
  });
 
- // Add fists
-function addFists() {
-    var newrowid = generateRowID();
-    var newrowattrs = {};
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_name"] = "testnewrow";
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_req_strength"] = 0;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_weight"] = 0;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_line"] = 2;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_bonus_attack"] = 0;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_bonus_defense"] = 0;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_bonus_multiple"] = 0;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_bonus_blunt"] = 1;
+on("sheet:opened", (eventInfo) => {
+    getSectionIDs("weaponsmelee", (idarray) => {
+        log("kek");
+        log(idarray);
+        fistfields = idarray.map(id => `repeating_weaponsmelee_${id}_wm_fists`);
+        getAttrs(fistfields, (v1) => {
+            var dictionary = {};
+            var redundantFists = [];
+            log(v1);
+            Object.keys(v1).forEach( (key, index) => {
+                if( v1[key] == 1) {
+                    if (!("global_fists_id" in dictionary)) {
+                        dictionary["global_fists_id"] = key.replace("fists", "line");
+                    } else {
+                        redundantFists.push(key);
+                    }
+                }
+            });
+            if(!("global_fists_id" in dictionary)) {
+                var newrowid = generateRowID();
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_fists"] = 1; // Unique flag marking this as fists
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_name"] = "Pięść";
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_req_strength"] = 0;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_weight"] = 0;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_line"] = 2;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_bonus_attack"] = 0;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_bonus_defense"] = 0;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_bonus_multiple"] = 0;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_bonus_blunt"] = 1;
+                
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0"] = 10;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0_a"] = 1;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0_b"] = 1;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0_c"] = 1;
+                
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1"] = 12;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1_a"] = 1;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1_b"] = 1;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1_c"] = 3;
+                
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2"] = 14;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2_a"] = 1;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2_b"] = 3;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2_c"] = 3;
+                
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3"] = 16;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3_a"] = 1;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3_b"] = 3;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3_c"] = 9;
+                
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4"] = 18;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4_a"] = 3;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4_b"] = 3;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4_c"] = 9;
+                
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5"] = 19;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5_a"] = 3;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5_b"] = 9;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5_c"] = 9;
+                log("Fists not found - added");
+            }
+            if(redundantFists.length > 0) {
+                log("Multiple fists detected!");
+            }
+            setAttrs(dictionary);
+        });
+    });
+});
 
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0"] = 10;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0_a"] = 0;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0_b"] = 0;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0_c"] = 0;
-
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1"] = 12;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1_a"] = 0;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1_b"] = 0;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1_c"] = 1;
-
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2"] = 14;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2_a"] = 0;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2_b"] = 1;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2_c"] = 1;
-
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3"] = 16;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3_a"] = 1;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3_b"] = 1;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3_c"] = 1;
-
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4"] = 18;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4_a"] = 1;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4_b"] = 1;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4_c"] = 1;
-
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5"] = 19;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5_a"] = 1;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5_b"] = 1;
-    newrowattrs["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5_c"] = 1;
-
-    setAttrs(newrowattrs);
-} 
 
 
  // Weight calculations
