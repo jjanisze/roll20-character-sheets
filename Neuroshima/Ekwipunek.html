@@ -1,7 +1,7 @@
 <div class="page-ekwipunek">
     <h1>Wyposażenie</h1>
     <label>Ręka lewa<input type="text" name="attr_inv_hand_left_name" readonly /></label>
-    <label>Ręka prawa<input type="text" name="attr_inv_hand_right_name" /></label>
+    <label>Ręka prawa<input type="text" name="attr_inv_hand_right_name" readonly /></label>
     <input type="text" name="attr_inv_hand_left_id" value="">
     <input type="text" name="attr_inv_hand_right_id" value="">
     <h1>Broń Dystansowa</h1>
@@ -52,7 +52,7 @@
                             <h5>Punkty przebicia</h5>
                         </div>
                         <div class="divTableHead">
-                            <h5>Wymagana siła</h5>
+                            <h5>Wymagana budowa</h5>
                         </div>
                         <div class="divTableHead">
                             <h5>Segmenty przeładowania</h5>
@@ -158,6 +158,7 @@
     </fieldset>
 
     <h1>Broń Ręczna</h1>
+    <input type="hidden" name="attr_global_fists_id" value="0" />
     <fieldset class="repeating_weaponsmelee">
         <input type="hidden" name="attr_wm_fists" value="0" />
         <div class="weaponMeleeItem">
@@ -165,7 +166,7 @@
                 <div class="divTableHeading">
                     <div class="divTableRow">
                         <div class="divTableHead">Nazwa</div>
-                        <div class="divTableHead">Wymagana siła</div>
+                        <div class="divTableHead">Wymagana budowa</div>
                         <div class="divTableHead">Gramy</div>
                         <div class="divTableHead">Linia oporządzenia</div>
                     </div>

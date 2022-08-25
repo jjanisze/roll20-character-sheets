@@ -765,34 +765,56 @@ function generate_unequip_dictionary(tgtline, line_id, name_qualifier_pairs, cal
 function equip_inner(curLine, curName, curSource, leftID, rightID, fistsID) {
     // Unequip 
     let ued = {};
+    let actionString = "";
     if( curSource == leftID && curLine != 0) {
         ued["inv_hand_left_id"] = fistsID;
         ued["inv_hand_left_name"] = UNEQUIP_NAME;
+        actionString = `Odkłada z lewej ręki ${curName}`
     }
     if( curSource == rightID && curLine != 1) {
         ued["inv_hand_right_id"] = fistsID;
         ued["inv_hand_right_name"] = UNEQUIP_NAME;
+        actionString = `Odkłada z prawej ręki ${curName}`
     }
     if( Object.keys(ued).length > 0 ) {
         setAttrs(ued);
     }
     if(  curLine > 1 ) {
+        if( actionString.length > 0 ) {
+            startRoll(`&{template:message} {{message=${actionString}}}`, (results) => {
+                finishRoll(results.rollId, {});
+            });
+        }
         return;
     }
     
     generate_unequip_dictionary(
         curLine, curSource,
         [["weaponsranged", "wr"], ["weaponsmelee", "wm"]],
-        (dictionary) => {
+        async (dictionary) => {
             // Equip logic
+            let secondActionString = ""
             if(curLine == 0) {
                 dictionary["inv_hand_left_name"] = curName;
                 dictionary["inv_hand_left_id"] = curSource;
+                secondActionString = `Dobywa lewą ręką ${curName}`;
             } else if (curLine == 1) {
                 dictionary["inv_hand_right_name"] = curName;
                 dictionary["inv_hand_right_id"] = curSource;
+                secondActionString = `Dobywa prawą ręką ${curName}`;
             }
             setAttrs(dictionary); 
+            if( actionString.length > 0 ) {
+                actionString += " a następnie ";
+            }
+            if( secondActionString.length > 0) {
+                actionString += secondActionString;
+            }
+            if( actionString.length > 0 ) {
+                startRoll(`&{template:message} {{message=${actionString}}}`, (results) => {
+                    finishRoll(results.rollId, {});
+                });
+            }
       });
 }
 
