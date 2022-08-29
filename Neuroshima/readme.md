@@ -33,3 +33,6 @@ TODO: Add some way to drasniecie/rana
 
 ## WONTDO
 TODO: Non-standard skills based on arbitrary Wspolczynnik
+
+## Credits
+Thanks to Riernar for assistance in finding alternative to async/await fields

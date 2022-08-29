@@ -700,6 +700,14 @@ table.wspolczynniki input[type=number].wsp-star-display {
 	width:200px;
 }
 
+.charsheet div.param-page-fill {
+	width:auto;
+	padding-left:5px;
+	margin-left:5px;
+	padding-right:5px;
+	border-left: 2px solid #333;
+}
+
 .charsheet div.params-holder {
 	display: flex;
 	flex-direction: row;
@@ -717,7 +725,8 @@ table.wspolczynniki input[type=number].wsp-star-display {
 
 .charsheet span.postfix {
 	font-family: 'Candal', sans-serif;
-	font-size: 40;
+	margin-left:3px;
+	font-size: 15px;
 }
 
 .charsheet .layout-element {
@@ -759,6 +768,20 @@ table.wspolczynniki input[type=number].wsp-star-display {
 	overflow:hidden;
 	padding:0px;
 	margin:0px;
+}
+
+/*Configure the tab buttons*/
+.charsheet .weaponskillssheet-melee,
+.charsheet .weaponskillssheet-ranged,
+.charsheet .weaponskillssheet-none {
+    display: none;
+}
+
+/* Combat action tab based on selected weapon type */
+.charsheet .weaponskillssheet-tabstoggle[value="ranged"] ~ div.weaponskillssheet-ranged,
+.charsheet .weaponskillssheet-tabstoggle[value="melee"] ~ div.weaponskillssheet-melee,
+.charsheet .weaponskillssheet-tabstoggle[value="none"] ~ div.weaponskillssheet-none {
+    display: block;
 }
 
 

@@ -63,9 +63,52 @@
                 <span class="postfix">%</span>
             </div>
         </div>
-        <div class="param-page">
+        <div class="param-page-fill">
             <div class="param-row">
-                <h4> === TBD ===</h4>
+                <div>
+                    <button type="action" name="act_use_slot_left">L</button>
+                    Ręka lewa
+                </div>
+                <div>
+                    Ręka prawa
+                    <button type="action" name="act_use_slot_right">R</button>
+                </div>
+            </div>
+            <div class="param-row">
+                <input type="text" name="attr_inv_hand_left_name" class="big-black-box" readonly />
+                <input type="text" name="attr_inv_hand_right_name" class="big-black-box" readonly />
+            </div>
+            <input type="hidden" class="weaponskillssheet-tabstoggle" name="attr_weaponskillssheetTab"  value="none"  />
+            <div class="weaponskillssheet-melee">
+                <h2>Walka bronią białą</h2>
+                <span>character Stuff Goes here </span>
+            </div>
+            <div class="weaponskillssheet-ranged">
+                <h2>Walka bronią dystansową</h2>
+                <div class="param-row">
+                    Zasięg
+                    <input type="number" class="big-black-box" style="width: 80px;" name="attr_weapon_attack_range" value="0"> 
+                    <span class="postfix">m = </span>
+                    <input type="number" class="big-black-box" style="width: 80px;" name="attr_weapon_attack_range_penalty" value="0"> 
+                    <span class="postfix">%</span>
+                </div>
+                <div class="param-row">
+                    <span style="width:100px;">Pojedynczy</span>
+                    <button type="action" name="act_weapon_ranged_shot_single_1">1</button>
+                    <button type="action" name="act_weapon_ranged_shot_single_2">2</button>
+                    <button type="action" name="act_weapon_ranged_shot_single_3">3</button>
+                </div>
+                <div class="param-row">
+                    <span style="width:100px;">Seria</span>
+                    <button type="action" name="act_weapon_ranged_shot_auto_1">1</button>
+                    <button type="action" name="act_weapon_ranged_shot_auto_2">2</button>
+                    <button type="action" name="act_weapon_ranged_shot_auto_3">3</button>
+                </div>
+                <button type="action" name="act_weapon_ranged_misfire">Zacięcie</button>
+            </div>
+            <div class="weaponskillssheet-none">
+                <h2>Działania niebojowe</h2>
+                <span>Sheet Config/Settings goes here</span> 
             </div>
         </div>
     </div>

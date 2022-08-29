@@ -701,42 +701,9 @@ on("change:specjalizacja", function() {
 /*************************** EKWIPUNEK ****************************/
 const UNEQUIP_NAME = "Pięść";
 const UNEQUIP_ID = "";
-
-/*
-async function generate_unequip_dictionary(repfield, qualifier, tgtline, line_id) {
-    let dictionary = {};
-    let items = [];
-    const idarray = await getSectionIDsAsync(repfield);
-    for(var i=0; i < idarray.length; i++) {
-        let line = `repeating_${repfield}_${idarray[i]}_${qualifier}_line`;
-        if( line_id != line) {
-            items.push(line);
-        }
-    }
-    const v2 = await getAttrsAsync(items);
-    for (const [key, line] of Object.entries(v2)) {
-        if( line == tgtline ) {
-            dictionary[key] = 2;
-        }
-    }
-    return dictionary;
-};
-*/
-/*
-function generate_unequip_dictionary(repfield, qualifier, tgtline, line_id, callback) {
-    getSectionIDs(repfield, idarray => {
-      const items = idarray.map(id => `repeating_${repfield}_${id}_${qualifier}_line`)
-        .filter(line => line != line_id);
-      getAttrs(items, values => {
-          const dict = Object.entries(values)
-            .map(([key, val]) => val == tgtline)
-            .reduce((obj, [key, val]) => { obj[key] = 2; return obj; }, {});
-          callback(dictionary);
-      });
-    });
-  };
-*/
-
+const WEAPON_TYPE_RANGED = "ranged";
+const WEAPON_TYPE_MELEE = "melee";
+const WEAPON_TYPE_NONE = "none";
 
 // Big thanks to Riernar for this recursive magic!
 function generate_unequip_dictionary(tgtline, line_id, name_qualifier_pairs, callback) {
@@ -762,18 +729,20 @@ function generate_unequip_dictionary(tgtline, line_id, name_qualifier_pairs, cal
   };
 
 
-function equip_inner(curLine, curName, curSource, leftID, rightID, fistsID) {
+function equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, type) {
     // Unequip 
     let ued = {};
     let actionString = "";
     if( curSource == leftID && curLine != 0) {
         ued["inv_hand_left_id"] = fistsID;
         ued["inv_hand_left_name"] = UNEQUIP_NAME;
+        ued["inv_hand_left_type"] = WEAPON_TYPE_MELEE;
         actionString = `Odkłada z lewej ręki ${curName}`
     }
     if( curSource == rightID && curLine != 1) {
         ued["inv_hand_right_id"] = fistsID;
         ued["inv_hand_right_name"] = UNEQUIP_NAME;
+        ued["inv_hand_right_type"] = WEAPON_TYPE_MELEE;
         actionString = `Odkłada z prawej ręki ${curName}`
     }
     if( Object.keys(ued).length > 0 ) {
@@ -797,10 +766,12 @@ function equip_inner(curLine, curName, curSource, leftID, rightID, fistsID) {
             if(curLine == 0) {
                 dictionary["inv_hand_left_name"] = curName;
                 dictionary["inv_hand_left_id"] = curSource;
+                dictionary["inv_hand_left_type"] = type;
                 secondActionString = `Dobywa lewą ręką ${curName}`;
             } else if (curLine == 1) {
                 dictionary["inv_hand_right_name"] = curName;
                 dictionary["inv_hand_right_id"] = curSource;
+                dictionary["inv_hand_right_type"] = type;
                 secondActionString = `Dobywa prawą ręką ${curName}`;
             }
             setAttrs(dictionary); 
@@ -826,7 +797,7 @@ on("change:repeating_weaponsranged:wr_line", async (eventInfo) => {
         let leftID = v1.inv_hand_left_id;
         let rightID = v1.inv_hand_right_id;
         let fistsID = v1.global_fists_id;
-        equip_inner(curLine, curName, curSource, leftID, rightID, fistsID);
+        equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, WEAPON_TYPE_RANGED);
     });
  });
 
@@ -838,7 +809,7 @@ on("change:repeating_weaponsranged:wr_line", async (eventInfo) => {
         let leftID = v1.inv_hand_left_id;
         let rightID = v1.inv_hand_right_id;
         let fistsID = v1.global_fists_id;
-        equip_inner(curLine, curName, curSource, leftID, rightID, fistsID);
+        equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, WEAPON_TYPE_MELEE);
     });
  });
 
@@ -905,6 +876,7 @@ on("sheet:opened", (eventInfo) => {
             }
             if(redundantFists.length > 0) {
                 log("Multiple fists detected!");
+                // TODO: Remove extra fists
             }
             setAttrs(dictionary);
         });
@@ -923,5 +895,31 @@ on("sheet:opened", (eventInfo) => {
         setAttrs({repeating_weaponsranged_wr_total_weight:total_weight});
     });
  });
+
+function setWeaponSkillsSheet(hand) {
+    let handField = `inv_hand_${hand}_type`;
+    getAttrs([handField], (v1) => {
+        let weaponsSkillsTab = WEAPON_TYPE_NONE;
+        log(`Type for ${hand} is ${v1[handField]}`)
+        switch( v1[handField] ) {
+            case WEAPON_TYPE_RANGED:
+                weaponsSkillsTab = WEAPON_TYPE_RANGED;
+                break;
+            case WEAPON_TYPE_MELEE:
+                weaponsSkillsTab = WEAPON_TYPE_MELEE;
+                break;
+        }
+        setAttrs({"weaponskillssheetTab":weaponsSkillsTab});
+    });
+}
+
+// Show appropriate weapon tab based on weapon type
+on(`clicked:use_slot_left`, () => {
+    setWeaponSkillsSheet("left");
+});
+on(`clicked:use_slot_right`, () => {
+    setWeaponSkillsSheet("right");
+});
+
 /*************************** EKWIPUNEK ****************************/
 /******************************************************************/
