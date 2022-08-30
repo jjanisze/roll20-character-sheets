@@ -896,6 +896,37 @@ on("sheet:opened", (eventInfo) => {
     });
  });
 
+
+ // Range table
+ const WEAPON_RANGE_P   = 0;
+ const WEAPON_RANGE_PM  = 1;
+ const WEAPON_RANGE_K   = 2;
+ const WEAPON_RANGE_S   = 3;
+ const WEAPON_RANGE_SR  = 4;
+ const WEAPON_RANGE_L   = 5;
+ const WEAPON_RANGE_TABLE = {
+    //          P       PM      K       S       SR         
+    10:     [   0,      0,      0,      0,      -30 ],
+    20:     [   20,     10,     0,      0,      0   ],
+    30:     [   40,     20,     10,     10,     30  ],
+    40:     [   80,     30,     10,     10,     NaN ],
+    60:     [   120,    40,     20,     20,     NaN ],
+    80:     [   160,    60,     20,     20,     NaN ],
+    100:    [   NaN,    80,     30,     30,     NaN ],
+    150:    [   NaN,    120,    40,     30,     NaN ],
+    200:    [   NaN,    160,    60,     40,     NaN ],
+    250:    [   NaN,    NaN,    80,     40,     NaN ],
+    300:    [   NaN,    NaN,    120,    60,     NaN ],
+    400:    [   NaN,    NaN,    160,    80,     NaN ],
+    600:    [   NaN,    NaN,    NaN,    100,    NaN ],
+    1000:   [   NaN,    NaN,    NaN,    120,    NaN ],
+    1500:   [   NaN,    NaN,    NaN,    160,    NaN ]
+};
+
+function getRangePenalty(type, range) {
+
+}
+
 function setWeaponSkillsSheet(hand) {
     let handField = `inv_hand_${hand}_type`;
     getAttrs([handField], (v1) => {
@@ -909,7 +940,7 @@ function setWeaponSkillsSheet(hand) {
                 weaponsSkillsTab = WEAPON_TYPE_MELEE;
                 break;
         }
-        setAttrs({"weaponskillssheetTab":weaponsSkillsTab});
+        setAttrs({"weaponskillssheetTab":weaponsSkillsTab, "selectedWeaponHand":hand});
     });
 }
 
@@ -919,6 +950,9 @@ on(`clicked:use_slot_left`, () => {
 });
 on(`clicked:use_slot_right`, () => {
     setWeaponSkillsSheet("right");
+});
+on(`clicked:use_slot_none`, () => {
+    setWeaponSkillsSheet("none");
 });
 
 /*************************** EKWIPUNEK ****************************/

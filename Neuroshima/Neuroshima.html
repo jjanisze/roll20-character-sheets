@@ -574,9 +574,55 @@
                 <span class="postfix">%</span>
             </div>
         </div>
-        <div class="param-page">
+        <div class="param-page-fill">
             <div class="param-row">
-                <h4> === TBD ===</h4>
+                
+                <div>
+                    <button type="action" name="act_use_slot_left">L</button>
+                    Ręka lewa
+                </div>
+                <div><button type="action" name="act_use_slot_none">Upuść</button></div>
+                <div>
+                    Ręka prawa
+                    <button type="action" name="act_use_slot_right">R</button>
+                </div>
+            </div>
+            <div class="param-row">
+                <input type="hidden" class="weaponskillssheet-selectedhand" name="attr_selectedWeaponHand"  value="none"  />
+                <input type="text" name="attr_inv_hand_left_name" class="weapon-hand-left" readonly />
+                <input type="text" name="attr_inv_hand_right_name" class="weapon-hand-right" readonly />
+            </div>
+            <input type="hidden" class="weaponskillssheet-tabstoggle" name="attr_weaponskillssheetTab"  value="none"  />
+            <div class="weaponskillssheet-melee">
+                <h2>Walka bronią białą</h2>
+                <span>character Stuff Goes here </span>
+            </div>
+            <div class="weaponskillssheet-ranged">
+                <h2>Walka bronią dystansową</h2>
+                <div class="param-row">
+                    Zasięg
+                    <input type="number" class="big-black-box" style="width: 80px;" name="attr_weapon_attack_range" value="0"> 
+                    <span class="postfix">m = </span>
+                    <input type="number" class="big-black-box" style="width: 80px;" name="attr_weapon_attack_range_penalty" value="0"> 
+                    <span class="postfix">%</span>
+                </div>
+                <div class="param-row">
+                    <span style="width:100px;">Pojedynczy</span>
+                    <button type="action" name="act_weapon_ranged_shot_single_1">1</button>
+                    <button type="action" name="act_weapon_ranged_shot_single_2">2</button>
+                    <button type="action" name="act_weapon_ranged_shot_single_3">3</button>
+                </div>
+                <div class="param-row">
+                    <span style="width:100px;">Seria</span>
+                    <button type="action" name="act_weapon_ranged_shot_auto_1">1</button>
+                    <button type="action" name="act_weapon_ranged_shot_auto_2">2</button>
+                    <button type="action" name="act_weapon_ranged_shot_auto_3">3</button>
+                </div>
+                <button type="action" name="act_weapon_ranged_misfire">Zacięcie</button>
+            </div>
+            <div class="weaponskillssheet-none">
+                <h2>Działania niebojowe</h2>
+                <span>Sheet Config/Settings goes here</span> 
             </div>
         </div>
     </div>
@@ -1245,9 +1291,13 @@
 </div><div class="page-ekwipunek">
     <h1>Wyposażenie</h1>
     <label>Ręka lewa<input type="text" name="attr_inv_hand_left_name" readonly /></label>
-    <label>Ręka prawa<input type="text" name="attr_inv_hand_right_name" /></label>
+    <label>Ręka prawa<input type="text" name="attr_inv_hand_right_name" readonly /></label>
     <input type="text" name="attr_inv_hand_left_id" value="">
     <input type="text" name="attr_inv_hand_right_id" value="">
+    <br/>
+    <input type="text" name="attr_inv_hand_left_type" value="melee">
+    <input type="text" name="attr_inv_hand_right_type" value="melee">
+    <br/>
     <h1>Broń Dystansowa</h1>
     <fieldset class="repeating_weaponsranged">
         <div class="weaponRangedItem">
@@ -1296,7 +1346,7 @@
                             <h5>Punkty przebicia</h5>
                         </div>
                         <div class="divTableHead">
-                            <h5>Wymagana siła</h5>
+                            <h5>Wymagana budowa</h5>
                         </div>
                         <div class="divTableHead">
                             <h5>Segmenty przeładowania</h5>
@@ -1382,6 +1432,7 @@
                                 <option value="2">K</option>
                                 <option value="3">S</option>
                                 <option value="4">ŚR</option>
+                                <option value="5">Łuk</option>
                             </select>
                         </div>
                         <div class="divTableCell"><input type="text" name="attr_wr_caliber" class="big-black-box"
@@ -1402,13 +1453,15 @@
     </fieldset>
 
     <h1>Broń Ręczna</h1>
+    <input type="hidden" name="attr_global_fists_id" value="0" />
     <fieldset class="repeating_weaponsmelee">
+        <input type="hidden" name="attr_wm_fists" value="0" />
         <div class="weaponMeleeItem">
             <div class="divTable">
                 <div class="divTableHeading">
                     <div class="divTableRow">
                         <div class="divTableHead">Nazwa</div>
-                        <div class="divTableHead">Wymagana siła</div>
+                        <div class="divTableHead">Wymagana budowa</div>
                         <div class="divTableHead">Gramy</div>
                         <div class="divTableHead">Linia oporządzenia</div>
                     </div>
@@ -1457,7 +1510,7 @@
                             <input type="number" name="attr_wm_bonus_multiple" class="big-black-box" />
                         </div>
                         <div class="divTableCell">
-                            <input type="checkbox" name="attr_wm_blunt" value="1">
+                            <input type="checkbox" name="attr_wm_blunt" value="0">
                         </div>
                     </div>
                 </div>
@@ -1712,13 +1765,13 @@ function clamp(number, min, max) {
 /******************************************************************/
 /****************************** TABS ******************************/
 const buttonlist = ["wspolczynniki","umiejetnosci","inwentarz", "ekwipunek"];
-    buttonlist.forEach(button => {
-        on(`clicked:${button}`, function() {
-            setAttrs({
-                sheetTab: button
-            });
+buttonlist.forEach(button => {
+    on(`clicked:${button}`, function() {
+        setAttrs({
+            sheetTab: button
         });
     });
+});
 /****************************** TABS ******************************/
 /******************************************************************/
 /******************************************************************/
@@ -2352,62 +2405,189 @@ on("change:specjalizacja", function() {
 /*************************** EKWIPUNEK ****************************/
 const UNEQUIP_NAME = "Pięść";
 const UNEQUIP_ID = "";
+const WEAPON_TYPE_RANGED = "ranged";
+const WEAPON_TYPE_MELEE = "melee";
+const WEAPON_TYPE_NONE = "none";
 
-on("change:repeating_weaponsranged:wr_line", function(eventInfo) {
-    getAttrs(["repeating_weaponsranged_wr_line", "repeating_weaponsranged_wr_name", "inv_hand_left_id", "inv_hand_right_id"], function(v1) {
+// Big thanks to Riernar for this recursive magic!
+function generate_unequip_dictionary(tgtline, line_id, name_qualifier_pairs, callback) {
+    const pairs = [...name_qualifier_pairs];
+    const attributes = [];
+    const helper_callback = function(idarray) {
+      const [name, qualifier] = pairs.pop();
+      const items = idarray.map(id => `repeating_${name}_${id}_${qualifier}_line`)
+        .filter(line => line != line_id);
+      attributes.push(...items);
+      if (pairs.length > 0) {
+        getSectionIDs(pairs[pairs.length - 1][0], helper_callback);
+      } else {
+        getAttrs(attributes, values => {
+          const dictionary = Object.entries(values)
+            .filter(([key, val]) => val == tgtline)
+            .reduce((obj, [key, val]) => { obj[key] = 2; return obj; }, {});
+          callback(dictionary);
+        });
+      }
+    }
+    getSectionIDs(pairs[pairs.length - 1][0], helper_callback);
+  };
+
+
+function equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, type) {
+    // Unequip 
+    let ued = {};
+    let actionString = "";
+    if( curSource == leftID && curLine != 0) {
+        ued["inv_hand_left_id"] = fistsID;
+        ued["inv_hand_left_name"] = UNEQUIP_NAME;
+        ued["inv_hand_left_type"] = WEAPON_TYPE_MELEE;
+        actionString = `Odkłada z lewej ręki ${curName}`
+    }
+    if( curSource == rightID && curLine != 1) {
+        ued["inv_hand_right_id"] = fistsID;
+        ued["inv_hand_right_name"] = UNEQUIP_NAME;
+        ued["inv_hand_right_type"] = WEAPON_TYPE_MELEE;
+        actionString = `Odkłada z prawej ręki ${curName}`
+    }
+    if( Object.keys(ued).length > 0 ) {
+        setAttrs(ued);
+    }
+    if(  curLine > 1 ) {
+        if( actionString.length > 0 ) {
+            startRoll(`&{template:message} {{message=${actionString}}}`, (results) => {
+                finishRoll(results.rollId, {});
+            });
+        }
+        return;
+    }
+    
+    generate_unequip_dictionary(
+        curLine, curSource,
+        [["weaponsranged", "wr"], ["weaponsmelee", "wm"]],
+        async (dictionary) => {
+            // Equip logic
+            let secondActionString = ""
+            if(curLine == 0) {
+                dictionary["inv_hand_left_name"] = curName;
+                dictionary["inv_hand_left_id"] = curSource;
+                dictionary["inv_hand_left_type"] = type;
+                secondActionString = `Dobywa lewą ręką ${curName}`;
+            } else if (curLine == 1) {
+                dictionary["inv_hand_right_name"] = curName;
+                dictionary["inv_hand_right_id"] = curSource;
+                dictionary["inv_hand_right_type"] = type;
+                secondActionString = `Dobywa prawą ręką ${curName}`;
+            }
+            setAttrs(dictionary); 
+            if( actionString.length > 0 ) {
+                actionString += " a następnie ";
+            }
+            if( secondActionString.length > 0) {
+                actionString += secondActionString;
+            }
+            if( actionString.length > 0 ) {
+                startRoll(`&{template:message} {{message=${actionString}}}`, (results) => {
+                    finishRoll(results.rollId, {});
+                });
+            }
+      });
+}
+
+on("change:repeating_weaponsranged:wr_line", async (eventInfo) => {
+    const v1 = getAttrs(["repeating_weaponsranged_wr_line", "repeating_weaponsranged_wr_name", "inv_hand_left_id", "inv_hand_right_id", "global_fists_id"], (v1) => {
         let curLine = v1.repeating_weaponsranged_wr_line;
         let curName = v1.repeating_weaponsranged_wr_name;
         let curSource = eventInfo.sourceAttribute;
         let leftID = v1.inv_hand_left_id;
         let rightID = v1.inv_hand_right_id;
-
-        // Unequip 
-        let ued = {};
-        if( curSource == leftID && curLine != 0) {
-            ued["inv_hand_left_id"] = UNEQUIP_ID;
-            ued["inv_hand_left_name"] = UNEQUIP_NAME;
-        }
-        if( curSource == rightID && curLine != 1) {
-            ued["inv_hand_right_id"] = UNEQUIP_ID;
-            ued["inv_hand_right_name"] = UNEQUIP_NAME;
-        }
-        if( Object.keys(ued).length > 0 ) {
-            setAttrs(ued);
-        }
-
-        if(  curLine > 1 ) {
-            return;
-        }
-        getSectionIDs("weaponsranged", function(idarray) {
-            let items = [];
-            for(var i=0; i < idarray.length; i++) {
-                let line = `repeating_weaponsranged_${idarray[i]}_wr_line`;
-                if( curSource != line) {
-                    items.push(line);
-                }
-            }
-            getAttrs(items, function(v2) {
-                let dictionary = {};
-                for (const [key, line] of Object.entries(v2)) {
-                    if( line == v1.repeating_weaponsranged_wr_line ) {
-                        dictionary[key] = 2;
-                    }
-            }
-            
-            // Equip logic
-            if(curLine == 0) {
-                dictionary["inv_hand_left_name"] = curName;
-                dictionary["inv_hand_left_id"] = curSource;
-            } else if (curLine == 1) {
-                dictionary["inv_hand_right_name"] = curName;
-                dictionary["inv_hand_right_id"] = curSource;
-            }
-
-            setAttrs(dictionary);   
-            });
-        });
+        let fistsID = v1.global_fists_id;
+        equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, WEAPON_TYPE_RANGED);
     });
  });
+
+ on("change:repeating_weaponsmelee:wm_line", async (eventInfo) => {
+    const v1 = getAttrs(["repeating_weaponsmelee_wm_line", "repeating_weaponsmelee_wm_name", "inv_hand_left_id", "inv_hand_right_id", "global_fists_id"], (v1) => {
+        let curLine = v1.repeating_weaponsmelee_wm_line;
+        let curName = v1.repeating_weaponsmelee_wm_name;
+        let curSource = eventInfo.sourceAttribute;
+        let leftID = v1.inv_hand_left_id;
+        let rightID = v1.inv_hand_right_id;
+        let fistsID = v1.global_fists_id;
+        equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, WEAPON_TYPE_MELEE);
+    });
+ });
+
+on("sheet:opened", (eventInfo) => {
+    getSectionIDs("weaponsmelee", (idarray) => {
+        log("kek");
+        log(idarray);
+        fistfields = idarray.map(id => `repeating_weaponsmelee_${id}_wm_fists`);
+        getAttrs(fistfields, (v1) => {
+            var dictionary = {};
+            var redundantFists = [];
+            log(v1);
+            Object.keys(v1).forEach( (key, index) => {
+                if( v1[key] == 1) {
+                    if (!("global_fists_id" in dictionary)) {
+                        dictionary["global_fists_id"] = key.replace("fists", "line");
+                    } else {
+                        redundantFists.push(key);
+                    }
+                }
+            });
+            if(!("global_fists_id" in dictionary)) {
+                var newrowid = generateRowID();
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_fists"] = 1; // Unique flag marking this as fists
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_name"] = "Pięść";
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_req_strength"] = 0;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_weight"] = 0;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_line"] = 2;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_bonus_attack"] = 0;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_bonus_defense"] = 0;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_bonus_multiple"] = 0;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_bonus_blunt"] = 1;
+                
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0"] = 10;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0_a"] = 1;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0_b"] = 1;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_0_c"] = 1;
+                
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1"] = 12;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1_a"] = 1;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1_b"] = 1;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_1_c"] = 3;
+                
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2"] = 14;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2_a"] = 1;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2_b"] = 3;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_2_c"] = 3;
+                
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3"] = 16;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3_a"] = 1;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3_b"] = 3;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_3_c"] = 9;
+                
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4"] = 18;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4_a"] = 3;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4_b"] = 3;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_4_c"] = 9;
+                
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5"] = 19;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5_a"] = 3;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5_b"] = 9;
+                dictionary["repeating_weaponsmelee_" + newrowid + "_wm_dmg_thresh_5_c"] = 9;
+                log("Fists not found - added");
+            }
+            if(redundantFists.length > 0) {
+                log("Multiple fists detected!");
+                // TODO: Remove extra fists
+            }
+            setAttrs(dictionary);
+        });
+    });
+});
+
+
 
  // Weight calculations
  on("change:repeating_weaponsranged:wr_ammo change:repeating_weaponsranged:wr_empty_weight", (eventInfo) => {
@@ -2419,6 +2599,66 @@ on("change:repeating_weaponsranged:wr_line", function(eventInfo) {
         setAttrs({repeating_weaponsranged_wr_total_weight:total_weight});
     });
  });
+
+
+ // Range table
+ const WEAPON_RANGE_P   = 0;
+ const WEAPON_RANGE_PM  = 1;
+ const WEAPON_RANGE_K   = 2;
+ const WEAPON_RANGE_S   = 3;
+ const WEAPON_RANGE_SR  = 4;
+ const WEAPON_RANGE_L   = 5;
+ const WEAPON_RANGE_TABLE = {
+    //          P       PM      K       S       SR         
+    10:     [   0,      0,      0,      0,      -30 ],
+    20:     [   20,     10,     0,      0,      0   ],
+    30:     [   40,     20,     10,     10,     30  ],
+    40:     [   80,     30,     10,     10,     NaN ],
+    60:     [   120,    40,     20,     20,     NaN ],
+    80:     [   160,    60,     20,     20,     NaN ],
+    100:    [   NaN,    80,     30,     30,     NaN ],
+    150:    [   NaN,    120,    40,     30,     NaN ],
+    200:    [   NaN,    160,    60,     40,     NaN ],
+    250:    [   NaN,    NaN,    80,     40,     NaN ],
+    300:    [   NaN,    NaN,    120,    60,     NaN ],
+    400:    [   NaN,    NaN,    160,    80,     NaN ],
+    600:    [   NaN,    NaN,    NaN,    100,    NaN ],
+    1000:   [   NaN,    NaN,    NaN,    120,    NaN ],
+    1500:   [   NaN,    NaN,    NaN,    160,    NaN ]
+};
+
+function getRangePenalty(type, range) {
+
+}
+
+function setWeaponSkillsSheet(hand) {
+    let handField = `inv_hand_${hand}_type`;
+    getAttrs([handField], (v1) => {
+        let weaponsSkillsTab = WEAPON_TYPE_NONE;
+        log(`Type for ${hand} is ${v1[handField]}`)
+        switch( v1[handField] ) {
+            case WEAPON_TYPE_RANGED:
+                weaponsSkillsTab = WEAPON_TYPE_RANGED;
+                break;
+            case WEAPON_TYPE_MELEE:
+                weaponsSkillsTab = WEAPON_TYPE_MELEE;
+                break;
+        }
+        setAttrs({"weaponskillssheetTab":weaponsSkillsTab, "selectedWeaponHand":hand});
+    });
+}
+
+// Show appropriate weapon tab based on weapon type
+on(`clicked:use_slot_left`, () => {
+    setWeaponSkillsSheet("left");
+});
+on(`clicked:use_slot_right`, () => {
+    setWeaponSkillsSheet("right");
+});
+on(`clicked:use_slot_none`, () => {
+    setWeaponSkillsSheet("none");
+});
+
 /*************************** EKWIPUNEK ****************************/
 /******************************************************************/
 </script><rolltemplate class="sheet-rolltemplate-test">
@@ -2492,5 +2732,11 @@ on("change:repeating_weaponsranged:wr_line", function(eventInfo) {
                 
             </h4>
         </div>
+    </div>
+</rolltemplate>
+
+<rolltemplate class="sheet-rolltemplate-message">
+    <div class="sheet-template-container">
+        <h1>{{message}}</h1>
     </div>
 </rolltemplate>

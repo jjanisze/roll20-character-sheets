@@ -112,6 +112,20 @@ html,body {
 	overflow:hidden;
 }
 
+.charsheet input.big-red-box {
+	background-color: transparent;
+	border:3px solid rgba(255, 0, 0, 0.7);
+	color: rgba(0,0,0,0.8);
+	font-family: 'Special Elite', cursive;
+	font-weight: bold;
+	font-size:14px;
+	width:100%; 
+	text-align:center;
+	height: 25px;
+	resize:none;
+	overflow:hidden;
+}
+
 .charsheet input.big-inactive-box {
 	background-color: rgba(0,0,0,0.3);
 	border:3px solid rgba(0,0,0,0.7);
@@ -784,6 +798,35 @@ table.wspolczynniki input[type=number].wsp-star-display {
     display: block;
 }
 
+.charsheet input.weapon-hand-left,
+.charsheet input.weapon-hand-right {
+	background-color: transparent;
+	border:3px solid rgba(0,0,0,0.7);
+	color: rgba(0,0,0,0.8);
+	font-family: 'Special Elite', cursive;
+	font-weight: bold;
+	font-size:14px;
+	width:100%; 
+	text-align:center;
+	height: 25px;
+	resize:none;
+	overflow:hidden;
+}
+
+.charsheet .weaponskillssheet-selectedhand[value="left"] ~ input.weapon-hand-left,
+.charsheet .weaponskillssheet-selectedhand[value="right"] ~ input.weapon-hand-right {
+	background-color: transparent;
+	border:3px solid rgba(255, 0, 0, 0.7);
+	color: rgba(0,0,0,0.8);
+	font-family: 'Special Elite', cursive;
+	font-weight: bold;
+	font-size:14px;
+	width:100%; 
+	text-align:center;
+	height: 25px;
+	resize:none;
+	overflow:hidden;
+}
 
 /************************** ROLL PARAMETERS ***********************/
 /******************************************************************/

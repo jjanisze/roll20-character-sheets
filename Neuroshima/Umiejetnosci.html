@@ -65,18 +65,21 @@
         </div>
         <div class="param-page-fill">
             <div class="param-row">
+                
                 <div>
                     <button type="action" name="act_use_slot_left">L</button>
                     Ręka lewa
                 </div>
+                <div><button type="action" name="act_use_slot_none">Upuść</button></div>
                 <div>
                     Ręka prawa
                     <button type="action" name="act_use_slot_right">R</button>
                 </div>
             </div>
             <div class="param-row">
-                <input type="text" name="attr_inv_hand_left_name" class="big-black-box" readonly />
-                <input type="text" name="attr_inv_hand_right_name" class="big-black-box" readonly />
+                <input type="hidden" class="weaponskillssheet-selectedhand" name="attr_selectedWeaponHand"  value="none"  />
+                <input type="text" name="attr_inv_hand_left_name" class="weapon-hand-left" readonly />
+                <input type="text" name="attr_inv_hand_right_name" class="weapon-hand-right" readonly />
             </div>
             <input type="hidden" class="weaponskillssheet-tabstoggle" name="attr_weaponskillssheetTab"  value="none"  />
             <div class="weaponskillssheet-melee">
