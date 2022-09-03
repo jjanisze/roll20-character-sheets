@@ -988,7 +988,7 @@ on(`change:weapon_attack_range`, (eventInfo) => {
             let penalty = getRangePenalty(v2[rangeFieldName], v2["weapon_attack_range"]);
             penalty = isNaN(penalty) ? 9999 : penalty; 
             log(`Penalty: ${penalty}`);
-            setAttrs({"weapon_attack_penalty":penalty});
+            setAttrs({"weapon_attack_range_penalty":penalty});
         });
         
     });
