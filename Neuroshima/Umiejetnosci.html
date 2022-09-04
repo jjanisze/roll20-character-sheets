@@ -65,7 +65,6 @@
         </div>
         <div class="param-page-fill">
             <div class="param-row">
-                
                 <div>
                     <button type="action" name="act_use_slot_left">L</button>
                     Ręka lewa
@@ -96,17 +95,24 @@
                     <input type="number" class="big-black-box" style="width: 80px;" name="attr_weapon_attack_penalty" value="0" readonly> 
                     <span class="postfix">%</span>
                 </div>
-                <div class="param-row">
+                <input type="hidden" class="weaponskillssheet-firemodetoggle" name="attr_selected_weapon_ranged_fire_mode"  value=""  />
+                <div class="param-row-weapon-single-shot">
                     <span style="width:100px;">Pojedynczy</span>
                     <button type="action" name="act_weapon_ranged_shot_single_1">1</button>
                     <button type="action" name="act_weapon_ranged_shot_single_2">2</button>
                     <button type="action" name="act_weapon_ranged_shot_single_3">3</button>
                 </div>
-                <div class="param-row">
+                <input type="hidden" class="weaponskillssheet-firemodetoggle" name="attr_selected_weapon_ranged_fire_mode"  value=""  />
+                <div class="param-row-weapon-burst-auto">
                     <span style="width:100px;">Seria</span>
-                    <button type="action" name="act_weapon_ranged_shot_auto_1">1</button>
-                    <button type="action" name="act_weapon_ranged_shot_auto_2">2</button>
-                    <button type="action" name="act_weapon_ranged_shot_auto_3">3</button>
+                    <input type="hidden" class="weaponskillssheet-firemodetoggle-burst" name="attr_selected_weapon_ranged_fire_mode_burst"  value=""  />
+                    <span class="fire-mode-selector-burst">
+                        <button type="action" name="act_weapon_ranged_shot_auto_1">1</button>
+                        <button type="action" name="act_weapon_ranged_shot_auto_2">2</button>
+                    </span>
+                    <span class="fire-mode-selector-auto">
+                        <button type="action" name="act_weapon_ranged_shot_auto_3">3</button>
+                    </span>
                 </div>
                 <button type="action" name="act_weapon_ranged_misfire">Zacięcie</button>
             </div>

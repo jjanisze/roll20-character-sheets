@@ -947,18 +947,56 @@ function setWeaponSkillsSheet(hand) {
     let handField = `inv_hand_${hand}_type`;
     let handFieldID = `inv_hand_${hand}_id`;
     getAttrs([handField, "inv_hand_left_id", "inv_hand_right_id"], (v1) => {
-        let weaponsSkillsTab = WEAPON_TYPE_NONE;
-        log(`Type for ${hand} is ${v1[handField]}`)
-        switch( v1[handField] ) {
-            case WEAPON_TYPE_RANGED:
-                weaponsSkillsTab = WEAPON_TYPE_RANGED;
-                break;
-            case WEAPON_TYPE_MELEE:
-                weaponsSkillsTab = WEAPON_TYPE_MELEE;
-                break;
+        let dictionary = {
+            "selectedWeaponHand":hand, 
+            "weaponskillssheetTab":WEAPON_TYPE_NONE,
+            "selected_weapon_ID":""};
+        if( hand != HAND_NONE ) {
+            let selectedWeaponID = v1[handFieldID];
+            dictionary["selected_weapon_ID"] = selectedWeaponID;
+            switch( v1[handField] ) {
+                case WEAPON_TYPE_RANGED:
+                    dictionary["weaponskillssheetTab"] = WEAPON_TYPE_RANGED;
+                    let selectedWeaponFireModeField = selectedWeaponID.replace("_line", "_modes");
+                    getAttrs([selectedWeaponFireModeField], (v2) => {
+                        let single = "";
+                        let burst = "";
+                        log(`single:${selectedWeaponFireModeField} - ${v2[selectedWeaponFireModeField]}`);
+                        switch(Number.parseInt(v2[selectedWeaponFireModeField])) {
+                            case 0:
+                                burst = "none";
+                                single = "mode-s";
+                                break;
+                            case 1:
+                                burst = "burst";
+                                single = "mode-sb";
+                                break;
+                            case 2:
+                                burst = "auto";
+                                single = "mode-sa";
+                                break;
+                            case 3:
+                                burst = "both";
+                                single = "mode-sba";
+                                break;
+                            case 4:
+                                burst = "both";
+                                single = "mode-ba";
+                                break;
+                            case 5:
+                                burst = "auto";
+                                single = "mode-a";
+                                break;
+                        }
+                        setAttrs({"selected_weapon_ranged_fire_mode":single, "selected_weapon_ranged_fire_mode_burst":burst});
+                    });
+                    break;
+                case WEAPON_TYPE_MELEE:
+                    dictionary["weaponskillssheetTab"] = WEAPON_TYPE_MELEE;
+                    break;
+            }
+            
         }
-        let dictionary = {"weaponskillssheetTab":weaponsSkillsTab, "selectedWeaponHand":hand};
-        dictionary["selected_weapon_ID"] = hand==HAND_NONE ? "" : v1[handFieldID];
         setAttrs(dictionary);
     });
 }

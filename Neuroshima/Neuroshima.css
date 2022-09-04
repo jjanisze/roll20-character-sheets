@@ -828,6 +828,30 @@ table.wspolczynniki input[type=number].wsp-star-display {
 	overflow:hidden;
 }
 
+.charsheet div.param-row-weapon-single-shot,
+.charsheet div.param-row-weapon-burst-auto {
+	display: flex;
+	justify-content: space-between;
+}
+
+.charsheet .weaponskillssheet-firemodetoggle[value="mode-ba"] ~ div.param-row-weapon-single-shot,
+.charsheet .weaponskillssheet-firemodetoggle[value="mode-a"] ~ div.param-row-weapon-single-shot {
+	display: none;
+}
+
+.charsheet .weaponskillssheet-firemodetoggle[value="mode-s"] ~ div.param-row-weapon-burst-auto {
+	display: none;
+}
+
+.charsheet .weaponskillssheet-firemodetoggle-burst[value="auto"] ~ span.fire-mode-selector-burst {
+	display: none;
+}
+
+.charsheet .weaponskillssheet-firemodetoggle-burst[value="burst"] ~ span.fire-mode-selector-auto {
+	display: none;
+}
+
+
 /************************** ROLL PARAMETERS ***********************/
 /******************************************************************/
 
@@ -877,6 +901,7 @@ table.wspolczynniki input[type=number].wsp-star-display {
 	font-size:13px;
 	color: #000;
 }
+
 
 
 /*************************** EKWIPUNEK ****************************/
