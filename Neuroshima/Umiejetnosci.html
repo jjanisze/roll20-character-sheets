@@ -52,6 +52,11 @@
                 <span class="postfix">%</span>
             </div>
             <div class="param-row">
+                <label><input type="checkbox" name="attr_modi_weapon_encumberace_penalties" value="1">Waga broni [Zr]</label>
+                <input type="number" class="big-black-box" style="width: 80px;" name="attr_weapon_encumberace_penalties" value="0">
+                <span class="postfix">%</span>
+            </div>
+            <div class="param-row">
                 <label><input type="checkbox" name="attr_modi_custom_penalty" value="1">Utrudnienie</label>
                 <input type="number" class="big-black-box" style="width: 80px;" name="attr_custom_penalty" value="0"> 
                 <span class="postfix">%</span>
@@ -97,22 +102,25 @@
                 </div>
                 <input type="hidden" class="weaponskillssheet-firemodetoggle" name="attr_selected_weapon_ranged_fire_mode"  value=""  />
                 <div class="param-row-weapon-single-shot">
-                    <span style="width:100px;">Pojedynczy</span>
-                    <button type="action" name="act_weapon_ranged_shot_single_1">1</button>
-                    <button type="action" name="act_weapon_ranged_shot_single_2">2</button>
-                    <button type="action" name="act_weapon_ranged_shot_single_3">3</button>
+                    <span style="width:70px;">Pojedynczy</span>
+                    <input type="hidden" class="sheet-radio-b" name="attr_selected_weapon_ranged_fire_button"  value="0"  />
+                    <button type="action" name="act_weapon_ranged_shot_single_1" class="sheet-radio-b sheet-radio-b-1"><span class="sheet-checked-b"></span></button><p class="sheet-radio-b-label-up">Celowany 1S</p>
+                    <button type="action" name="act_weapon_ranged_shot_single_2" class="sheet-radio-b sheet-radio-b-2"><span class="sheet-checked-b"></span></button><p class="sheet-radio-b-label-up">Celowany 2S</p>
+                    <button type="action" name="act_weapon_ranged_shot_single_3" class="sheet-radio-b sheet-radio-b-3"><span class="sheet-checked-b"></span></button><p class="sheet-radio-b-label-up">Celowany 3S</p>
                 </div>
                 <input type="hidden" class="weaponskillssheet-firemodetoggle" name="attr_selected_weapon_ranged_fire_mode"  value=""  />
                 <div class="param-row-weapon-burst-auto">
-                    <span style="width:100px;">Seria</span>
+                    <span style="width:70px;">Seria</span>
                     <input type="hidden" class="weaponskillssheet-firemodetoggle-burst" name="attr_selected_weapon_ranged_fire_mode_burst"  value=""  />
-                    <span class="fire-mode-selector-burst">
-                        <button type="action" name="act_weapon_ranged_shot_auto_1">1</button>
-                        <button type="action" name="act_weapon_ranged_shot_auto_2">2</button>
-                    </span>
-                    <span class="fire-mode-selector-auto">
-                        <button type="action" name="act_weapon_ranged_shot_auto_3">3</button>
-                    </span>
+                    <div class="fire-mode-selector-burst">
+                        <input type="hidden" class="sheet-radio-b" name="attr_selected_weapon_ranged_fire_button"  value="0"  />
+                        <button type="action" name="act_weapon_ranged_shot_auto_1" class="sheet-radio-b sheet-radio-b-4"><span class="sheet-checked-b"></span></button><p class="sheet-radio-b-label-down">Krótka 1S</p>
+                        <button type="action" name="act_weapon_ranged_shot_auto_2" class="sheet-radio-b sheet-radio-b-5"><span class="sheet-checked-b"></span></button><p class="sheet-radio-b-label-down">Długa 2S</p>
+                    </div>
+                    <div class="fire-mode-selector-auto">
+                        <input type="hidden" class="sheet-radio-b" name="attr_selected_weapon_ranged_fire_button"  value="0"  />
+                        <button type="action" name="act_weapon_ranged_shot_auto_3"  class="sheet-radio-b sheet-radio-b-6"><span class="sheet-checked-b"></span></button><p class="sheet-radio-b-label-down">Ciągly 3S</p>
+                    </div>
                 </div>
                 <button type="action" name="act_weapon_ranged_misfire">Zacięcie</button>
             </div>

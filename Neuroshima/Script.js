@@ -1032,5 +1032,35 @@ on(`change:weapon_attack_range`, (eventInfo) => {
     });
 });
 
+const sf_btnlist = [
+    "single_1",
+    "single_2",
+    "single_3"
+];
+
+const af_btnlist = [
+    "auto_1",
+    "auto_2",
+    "auto_3"
+];
+
+sf_btnlist.forEach((ssb) => {
+    on(`clicked:weapon_ranged_shot_${ssb}`, (info) => {
+        let btnid = (parseInt(ssb.split("_").pop())||0);
+        setAttrs({
+            ["selected_weapon_ranged_fire_button"]: btnid
+          });
+    });
+});
+
+af_btnlist.forEach((afi) => {
+    on(`clicked:weapon_ranged_shot_${afi}`, (info) => {
+        let btnid = (parseInt(afi.split("_").pop())||0) + 3;
+        setAttrs({
+            ["selected_weapon_ranged_fire_button"]: btnid
+          });
+    });
+});
+
 /*************************** EKWIPUNEK ****************************/
 /******************************************************************/

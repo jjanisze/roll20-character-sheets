@@ -789,6 +789,17 @@ table.wspolczynniki input[type=number].wsp-star-display {
 .charsheet .weaponskillssheet-ranged,
 .charsheet .weaponskillssheet-none {
     display: none;
+
+    border-width: 4px;
+    padding: 5px;
+}
+
+.charsheet .weaponskillssheet-melee,
+.charsheet .weaponskillssheet-ranged {
+	border-style: solid;
+	border-color: #9b0000b5;
+    background-color: #9b000010;
+	border-width:4px;
 }
 
 /* Combat action tab based on selected weapon type */
@@ -800,38 +811,46 @@ table.wspolczynniki input[type=number].wsp-star-display {
 
 .charsheet input.weapon-hand-left,
 .charsheet input.weapon-hand-right {
-	background-color: transparent;
-	border:3px solid rgba(0,0,0,0.7);
-	color: rgba(0,0,0,0.8);
-	font-family: 'Special Elite', cursive;
-	font-weight: bold;
-	font-size:14px;
-	width:100%; 
-	text-align:center;
-	height: 25px;
-	resize:none;
-	overflow:hidden;
+	background-color: #000000a8;
+    border: 0px solid rgba(0,0,0,0.7);
+    color: rgb(255 255 255 / 75%);
+    font-family: 'Special Elite', cursive;
+    font-weight: bold;
+    font-size: 14px;
+    width: 100%;
+    text-align: center;
+    height: 25px;
+    resize: none;
+    overflow: hidden;
 }
 
 .charsheet .weaponskillssheet-selectedhand[value="left"] ~ input.weapon-hand-left,
 .charsheet .weaponskillssheet-selectedhand[value="right"] ~ input.weapon-hand-right {
-	background-color: transparent;
-	border:3px solid rgba(255, 0, 0, 0.7);
-	color: rgba(0,0,0,0.8);
-	font-family: 'Special Elite', cursive;
-	font-weight: bold;
-	font-size:14px;
-	width:100%; 
-	text-align:center;
-	height: 25px;
-	resize:none;
-	overflow:hidden;
+	background-color: #9b0000b5;
+    border: 0px solid #9b0000b5;
+    color: #ffffffed;
+    font-family: 'Special Elite', cursive;
+    font-weight: bold;
+    font-size: 14px;
+    width: 100%;
+    text-align: center;
+    height: 25px;
+    resize: none;
+    overflow: hidden;
 }
 
 .charsheet div.param-row-weapon-single-shot,
 .charsheet div.param-row-weapon-burst-auto {
 	display: flex;
 	justify-content: space-between;
+}
+
+.charsheet div.param-row-weapon-single-shot {
+	padding-top: 40px;
+}
+
+.charsheet div.param-row-weapon-burst-auto {
+	padding-bottom: 40px;
 }
 
 .charsheet .weaponskillssheet-firemodetoggle[value="mode-ba"] ~ div.param-row-weapon-single-shot,
@@ -843,11 +862,69 @@ table.wspolczynniki input[type=number].wsp-star-display {
 	display: none;
 }
 
-.charsheet .weaponskillssheet-firemodetoggle-burst[value="auto"] ~ span.fire-mode-selector-burst {
-	display: none;
+.charsheet .weaponskillssheet-firemodetoggle-burst[value="auto"] ~ div.fire-mode-selector-burst {
+	visibility: hidden;
 }
 
-.charsheet .weaponskillssheet-firemodetoggle-burst[value="burst"] ~ span.fire-mode-selector-auto {
+.charsheet .weaponskillssheet-firemodetoggle-burst[value="burst"] ~ div.fire-mode-selector-auto {
+	visibility: hidden;
+}
+
+.charsheet div.fire-mode-selector-burst {
+	display: flex;
+	flex-grow: 2;
+	flex-direction: row;
+	justify-content: space-evenly;
+}
+
+.charsheet div.fire-mode-selector-auto {
+	display: flex;
+	flex-grow: 1;
+	flex-direction: row;
+	justify-content: space-evenly;
+}
+
+.charsheet p.sheet-radio-b-label-down {
+	position: relative;
+	bottom: -20px;
+	left:-50px;
+}
+
+.charsheet p.sheet-radio-b-label-up {
+	position: relative;
+	top: -20px;
+	left:-50px;
+}
+
+/* Radio buttons 2 - ranged weapon fire button select */
+
+/* Configure the button styling. This example makes it look like a radio. */
+.charsheet button.sheet-radio-b {
+	padding: 0;
+	border: solid 1px #a8a8a8;
+	cursor: pointer;
+  
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.charsheet button.sheet-radio-b > span.sheet-checked-b {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: buttontext;
+}
+  
+/* Hide the "checked" section of the radio if the attribute value does not match the radio */
+.charsheet input.sheet-radio-b:not([value="1"]) ~ button.sheet-radio-b-1 > span.sheet-checked-b,
+.charsheet input.sheet-radio-b:not([value="2"]) ~ button.sheet-radio-b-2 > span.sheet-checked-b,
+.charsheet input.sheet-radio-b:not([value="3"]) ~ button.sheet-radio-b-3 > span.sheet-checked-b,
+.charsheet input.sheet-radio-b:not([value="4"]) ~ button.sheet-radio-b-4 > span.sheet-checked-b,
+.charsheet input.sheet-radio-b:not([value="5"]) ~ button.sheet-radio-b-5 > span.sheet-checked-b,
+.charsheet input.sheet-radio-b:not([value="6"]) ~ button.sheet-radio-b-6 > span.sheet-checked-b {	
 	display: none;
 }
 
