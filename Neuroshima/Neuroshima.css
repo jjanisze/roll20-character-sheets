@@ -822,6 +822,15 @@ table.wspolczynniki input[type=number].wsp-star-display {
     height: 25px;
     resize: none;
     overflow: hidden;
+	border-radius:0px;
+}
+
+.charsheet input.weapon-hand-left {
+	margin-right: 2px;
+}
+
+.charsheet input.weapon-hand-right {
+	margin-left: 2px;
 }
 
 .charsheet .weaponskillssheet-selectedhand[value="left"] ~ input.weapon-hand-left,
@@ -837,6 +846,7 @@ table.wspolczynniki input[type=number].wsp-star-display {
     height: 25px;
     resize: none;
     overflow: hidden;
+	border-radius:0px;
 }
 
 .charsheet div.param-row-weapon-single-shot,
