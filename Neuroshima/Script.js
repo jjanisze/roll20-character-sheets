@@ -227,6 +227,11 @@ on("change:zrecznosc_base change:mod_zrecznosc change:percepcja_base change:mod_
 /******************************************************************/
 /******************************************************************/
 /************************** ROLL PARAMETERS ***********************/
+
+const HAND_LEFT = "left";
+const HAND_RIGHT = "right";
+const HAND_NONE = "none";
+
 const difficulties = [-2,0,2,5,8,11,15, 20, 24];
 const startingPercent = [-20, 0, 11, 31, 61, 91, 121, 201, 241];
 const lastPassingPercent = [-1,10,30,60,90,120,200, 240, 0xFFFFFF];
@@ -393,51 +398,144 @@ wogl_labels.forEach((label) => {
     });
 });
 
-statslist.forEach((attribute) => {
-    on(`change:${attribute}`, () => {
-        getAttrs([attribute], (values) => {
-            let statval = (parseInt(values[attribute])||0);
-            statval = clamp(statval, 0, 20);
-            let dictionary = {};
-            dictionary[attribute] = statval;
-            setAttrs(dictionary);
-        });
-    });
+const ROLL_MODE_NON_COMBAT = "non-combat";
+const ROLL_MODE_COMBAT_RANGED_SINGLE = "combat-ranged-single";
+const ROLL_MODE_COMBAT_RANGED_RAPID = "combat-ranged-rapid";
+const ROLL_MODE_COMBAT_RANGED_MISFIRE = "combat-ranged-misfire";
+const ROLL_MODE_COMBAT_MELEE = "combat-melee";
 
-    on(`clicked:test_${attribute}`, (info) => {
+function umiejetnoscHandler(attribute, info) {
+    let base_wsp = stats2wsp[attribute];
+    getAttrs(["final_test_level", "modi_battle", "modi_open", "selectedWeaponHand", 
+        "inv_hand_left_name", "inv_hand_left_type", "inv_hand_left_id",
+        "inv_hand_right_name", "inv_hand_right_type", "inv_hand_right_id", 
+        "selected_weapon_ranged_fire_button", 
+        base_wsp, attribute], 
+    function(values) {
         let genitive = stats2genitive[attribute];
         let skill_wsp_name = stats2wsp[attribute];
-        let wsp_name = wsp2accusative[skill_wsp_name]
-        startRoll(`&{template:test} {{base_wsp_name=${wsp_name}}} {{open=[[0[computed value]]]}} {{successes=[[0[computed value]]]}} {{finaldifficulty=[[0[computed value]]]}} {{skill-name=${genitive}}} {{roll1=[[1d20]]}} {{roll2=[[1d20]]}} {{roll3=[[1d20]]}}`, (results) => {
-            let base_wsp = stats2wsp[attribute];
-            
-            getAttrs(["final_test_level", "modi_battle", "modi_open", base_wsp, attribute], function(values) {
-                let skill = (parseInt(values[attribute])||0);
-                let statbase = parseInt(values[base_wsp]);
-                let modi_battle = (parseInt(values.modi_battle)||0);
-                let modi_open = (parseInt(values.modi_open)||0);
-                
-                let skill_remaining = skill;
-                let final_test_level = (parseInt(values.final_test_level)||0);
+        let wsp_name = wsp2accusative[skill_wsp_name];
+        let skill = (parseInt(values[attribute])||0);
+        let statbase = parseInt(values[base_wsp]);
+        let modi_battle = (parseInt(values.modi_battle)||0);
+        let modi_open = (parseInt(values.modi_open)||0);
+        
+        let left_hand_name = String(values.inv_hand_left_name);
+        let left_hand_type = String(values.inv_hand_left_type);
+        let left_hand_id = String(values.inv_hand_left_id);
+        let right_hand_name = String(values.inv_hand_right_name);
+        let right_hand_type = String(values.inv_hand_right_type);
+        let right_hand_id = String(values.inv_hand_right_id);
+        let selected_hand = String(values.selectedWeaponHand);
+        let selected_weapon_ranged_fire_button = String(values.selected_weapon_ranged_fire_mode);
+        
+        let selected_hand_name = "";
+        let selected_hand_type = "";
+        let selected_hand_id = "";
 
+        
+        switch(selected_hand) {
+            case HAND_LEFT:
+                selected_hand_name = left_hand_name;
+                selected_hand_type = left_hand_type;
+                selected_hand_id = left_hand_id;
+            case HAND_RIGHT:
+                selected_hand_name = right_hand_name;
+                selected_hand_type = right_hand_type;
+                selected_hand_id = right_hand_id;
+                break;
+            default:
+                selected_hand = HAND_NONE;
+        }
+        
+        let skill_remaining = skill;
+        let final_test_level = (parseInt(values.final_test_level)||0);
+        let rollMode = ROLL_MODE_NON_COMBAT;
+        let dice_count = 0;
+        if( !modi_battle ){
+            dice_count = 3;
+            // Slider - no skill means test is harder by 1 level. Git gud.
+            let advantage = skill ? parseInt(skill/4) : -1; 
+            final_test_level -= advantage;
+        } else {
+            switch(selected_hand) {
+                case HAND_LEFT:
+                case HAND_RIGHT:
+                    switch(selected_hand_type) {
+                        case WEAPON_TYPE_RANGED:
+                            switch(selected_weapon_ranged_fire_button) {
+                                case 3:
+                                case 2:
+                                case 1:
+                                    dice_count = selected_weapon_ranged_fire_button;
+                                    rollMode = ROLL_MODE_COMBAT_RANGED_SINGLE;
+                                    break;
+                                case 4:
+                                case 5:
+                                case 6:
+                                    let segments = selected_weapon_ranged_fire_button - 3;
+                                    dice_count = 1;
+                                    rollMode = ROLL_MODE_COMBAT_RANGED_RAPID;
+                                    break;
+                                case -1:
+                                default:
+                                    log(`Invalid fire mode button selection - ${selected_weapon_ranged_fire_button}`)
+                                    return;
+                            }
+                            break;
+
+                        case WEAPON_TYPE_MELEE:
+                            rollMode = ROLL_MODE_COMBAT_RANGED_RAPID;
+                            break;
+
+                        case WEAPON_TYPE_NONE:
+                        default:
+                            dice_count = 3;
+                            rollMode = ROLL_MODE_NON_COMBAT;
+                    }
+                    break;
+
+                case HAND_NONE:
+                default:
+                    dice_count = 3;
+                    rollMode = ROLL_MODE_NON_COMBAT;
+            } 
+        }
+
+        // Create string with appropriate number of dice rolls
+        let dice_str = ""
+        for(let i = 0; i<dice_count; ++i) {
+            dice_str = dice_str.concat(`{{roll${i+1}=[[1d20]]}} `);
+        }
+        
+
+        log(`Rolling mode ${rollMode} with hand:${selected_hand} (${selected_hand_type} - ${selected_hand_name}) ${dice_str}`);
+
+
+        switch(rollMode){
+            case ROLL_MODE_COMBAT_RANGED_SINGLE:
+                startRoll(`&{template:${rollMode}} {{base_wsp_name=${wsp_name}}} {{successes=[[0[computed value]]]}} {{finaldifficulty=[[0[computed value]]]}} {{skill-name=${genitive}}} ${dice_str}`, (results) => {
+
+                });
+                break;
+
+            case ROLL_MODE_NON_COMBAT:
+            startRoll(`&{template:test} {{base_wsp_name=${wsp_name}}} {{open=[[0[computed value]]]}} {{successes=[[0[computed value]]]}} {{finaldifficulty=[[0[computed value]]]}} {{skill-name=${genitive}}} ${dice_str}`, (results) => {
                 const vals = [results.results.roll1.result, results.results.roll2.result, results.results.roll3.result];
                 let x = 0;
                 
+                log("ZZZZZZZZ");
                 if( !modi_battle ){
-                    // Slider - no skill means test is harder by 1 level. Git gud.
-                    let advantage = skill ? parseInt(skill/4) : -1; 
-                    final_test_level -= advantage;
-                }
-                
-                // Critical rolls ( 1 / 20 )
-                for (x=0; x<3; ++x) {
-                    if(vals[x]==1)
-                    {
-                        final_test_level -= 1;
-                    }
-                    if(vals[x]==20)
-                    {
-                        final_test_level += 1;
+                    // Critical rolls ( 1 / 20 )
+                    for (x=0; x<3; ++x) {
+                        if(vals[x]==1)
+                        {
+                            final_test_level -= 1;
+                        }
+                        if(vals[x]==20)
+                        {
+                            final_test_level += 1;
+                        }
                     }
                 }
                 
@@ -510,7 +608,24 @@ statslist.forEach((attribute) => {
                     }
                 );
             });
+            break;
+        }
+    });
+}
+
+statslist.forEach((attribute) => {
+    on(`change:${attribute}`, () => {
+        getAttrs([attribute], (values) => {
+            let statval = (parseInt(values[attribute])||0);
+            statval = clamp(statval, 0, 20);
+            let dictionary = {};
+            dictionary[attribute] = statval;
+            setAttrs(dictionary);
         });
+    });
+
+    on(`clicked:test_${attribute}`, (info) => {
+        umiejetnoscHandler(attribute, info);
     });
 });
 
@@ -815,13 +930,10 @@ on("change:repeating_weaponsranged:wr_line", async (eventInfo) => {
 
 on("sheet:opened", (eventInfo) => {
     getSectionIDs("weaponsmelee", (idarray) => {
-        log("kek");
-        log(idarray);
         fistfields = idarray.map(id => `repeating_weaponsmelee_${id}_wm_fists`);
         getAttrs(fistfields, (v1) => {
             var dictionary = {};
             var redundantFists = [];
-            log(v1);
             Object.keys(v1).forEach( (key, index) => {
                 if( v1[key] == 1) {
                     if (!("global_fists_id" in dictionary)) {
@@ -896,9 +1008,7 @@ on("sheet:opened", (eventInfo) => {
     });
  });
 
- const HAND_LEFT = "left";
- const HAND_RIGHT = "right";
- const HAND_NONE = "none";
+
 
  // Range table
  const WEAPON_RANGE_P   = 0;
@@ -943,52 +1053,62 @@ function getRangePenalty(type, range) {
     }
 }
 
+const FIRE_MODE_S = "mode-s";
+const FIRE_MODE_SB = "mode-sb";
+const FIRE_MODE_SA = "mode-sa";
+const FIRE_MODE_SBA = "mode-sba";
+const FIRE_MODE_BA = "mode-ba";
+const FIRE_MODE_A = "mode-a";
+
 function setWeaponSkillsSheet(hand) {
     let handField = `inv_hand_${hand}_type`;
     let handFieldID = `inv_hand_${hand}_id`;
+    let dictionary = {
+        "selectedWeaponHand":hand, 
+        "weaponskillssheetTab":WEAPON_TYPE_NONE,
+        "selected_weapon_ID":"",
+        "modi_battle":0,
+    };
     getAttrs([handField, "inv_hand_left_id", "inv_hand_right_id"], (v1) => {
-        let dictionary = {
-            "selectedWeaponHand":hand, 
-            "weaponskillssheetTab":WEAPON_TYPE_NONE,
-            "selected_weapon_ID":""};
         if( hand != HAND_NONE ) {
             let selectedWeaponID = v1[handFieldID];
             dictionary["selected_weapon_ID"] = selectedWeaponID;
+            dictionary["modi_battle"] = 1;
             switch( v1[handField] ) {
                 case WEAPON_TYPE_RANGED:
                     dictionary["weaponskillssheetTab"] = WEAPON_TYPE_RANGED;
                     let selectedWeaponFireModeField = selectedWeaponID.replace("_line", "_modes");
                     getAttrs([selectedWeaponFireModeField], (v2) => {
-                        let single = "";
+                        let mode = "";
                         let burst = "";
-                        log(`single:${selectedWeaponFireModeField} - ${v2[selectedWeaponFireModeField]}`);
                         switch(Number.parseInt(v2[selectedWeaponFireModeField])) {
                             case 0:
                                 burst = "none";
-                                single = "mode-s";
+                                mode = FIRE_MODE_S;
                                 break;
                             case 1:
                                 burst = "burst";
-                                single = "mode-sb";
+                                mode = FIRE_MODE_SB;
                                 break;
                             case 2:
                                 burst = "auto";
-                                single = "mode-sa";
+                                mode = FIRE_MODE_SA;
                                 break;
                             case 3:
                                 burst = "both";
-                                single = "mode-sba";
+                                mode = FIRE_MODE_SBA;
                                 break;
                             case 4:
                                 burst = "both";
-                                single = "mode-ba";
+                                mode = FIRE_MODE_BA;
                                 break;
                             case 5:
                                 burst = "auto";
-                                single = "mode-a";
+                                mode = FIRE_MODE_A;
                                 break;
                         }
-                        setAttrs({"selected_weapon_ranged_fire_mode":single, "selected_weapon_ranged_fire_mode_burst":burst});
+                        dictionary["selected_weapon_ranged_fire_mode"] = mode;
+                        dictionary["selected_weapon_ranged_fire_mode_burst"] = burst;
                     });
                     break;
                 case WEAPON_TYPE_MELEE:
@@ -999,6 +1119,7 @@ function setWeaponSkillsSheet(hand) {
         }
         setAttrs(dictionary);
     });
+    
 }
 
 // Show appropriate weapon tab based on weapon type
@@ -1019,13 +1140,9 @@ on(`change:weapon_attack_range`, (eventInfo) => {
             return;
         }
         rangeFieldName = v1["selected_weapon_ID"].replace("_line", "_range");
-        log(`HHHHHH: ${rangeFieldName}`);
         getAttrs([rangeFieldName, "weapon_attack_range"], (v2) => {
-            log(`VVV: ${v2[rangeFieldName]}`);
-            log(`RRR: ${v2["weapon_attack_range"]}`);
             let penalty = getRangePenalty(v2[rangeFieldName], v2["weapon_attack_range"]);
             penalty = isNaN(penalty) ? 9999 : penalty; 
-            log(`Penalty: ${penalty}`);
             setAttrs({"weapon_attack_penalty":penalty});
         });
         
