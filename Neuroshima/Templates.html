@@ -1,40 +1,14 @@
 <rolltemplate class="sheet-rolltemplate-test">
     <div class="sheet-template-container">
         <div class="sheet-results">
-            <h1>
-                {{#rollTotal() computed::finaldifficulty 0}}
-                    Łatwy 
-                {{/rollTotal() computed::finaldifficulty 0}}
-                {{#rollTotal() computed::finaldifficulty 1}}
-                    Przeciętny
-                {{/rollTotal() computed::finaldifficulty 1}}
-                {{#rollTotal() computed::finaldifficulty 2}}
-                    Problematyczny
-                {{/rollTotal() computed::finaldifficulty 2}}
-                {{#rollTotal() computed::finaldifficulty 3}}
-                    Trudny
-                {{/rollTotal() computed::finaldifficulty 3}}
-                {{#rollTotal() computed::finaldifficulty 4}}
-                    Bardzo Trudny
-                {{/rollTotal() computed::finaldifficulty 4}}
-                {{#rollTotal() computed::finaldifficulty 5}}
-                    Cholernie Trudny
-                {{/rollTotal() computed::finaldifficulty 5}}
-                {{#rollTotal() computed::finaldifficulty 6}}
-                    Fartowny
-                {{/rollTotal() computed::finaldifficulty 6}}
-                {{#rollTotal() computed::finaldifficulty 7}}
-                    Mistrzowski
-                {{/rollTotal() computed::finaldifficulty 7}}
-                {{#rollTotal() computed::finaldifficulty 8}}
-                    Arcymistrzowski
-                {{/rollTotal() computed::finaldifficulty 8}}
-            test
-            {{#rollTotal() computed::open 0}}zamknięty{{/rollTotal() computed::open 0}}
-            {{#rollTotal() computed::open 1}}otwarty{{/rollTotal() computed::open 1}}
-            {{skill-name}} na {{base_wsp_name}}
-        </h1>
-
+            <h1> 
+                {{initialdifficulty}} test 
+                {{skill-name}}
+            </h1>
+            <h3>{{skillval}}</h3>
+            <h3>na {{base_wsp_name}}</h3>  
+            <h3>z karami {{penalties}} %</h3>
+            <h1>{{computed::finaldifficultylabel}}</h1>
             
             {{#rollTotal() computed::roll1 0}}<div style="background-color:rgba(0, 255, 0, 0.3);">{{/rollTotal() computed::roll1 0}}
             {{#rollTotal() computed::roll1 1}}<div style="background-color:rgba(100, 30, 220, 0.4);">{{/rollTotal() computed::roll1 1}}
@@ -60,12 +34,12 @@
             </div>
 
             <h4>
-                {{#rollTotal() computed::open 0}}
+                {{#rollTotal() modi-open 0}}
                 Zdany na kościach: {{computed::successes}}
-                {{/rollTotal() computed::open 0}}
-                {{#rollTotal() computed::open 1}}
+                {{/rollTotal() modi-open 0}}
+                {{#rollTotal() modi-open 1}}
                 Punktów przewagi: {{computed::successes}}
-                {{/rollTotal() computed::open 1}}
+                {{/rollTotal() modi-open 1}}
                 
             </h4>
         </div>
@@ -80,7 +54,7 @@
 
 <rolltemplate class="sheet-rolltemplate-combat-ranged-single">
     <div class="sheet-template-container">
-        <h1>{{finaldifficultylabel}} test {{skill_name}} używając {{weapon_name}} na {{base_wsp_name}}</h1>
+        <h1>{{finaldifficultylabel}} test walki {{skill_name}} używając {{weapon_name}} na {{base_wsp_name}}</h1>
 
             {{#rollTotal() computed::roll1 0}}<div style="background-color:rgba(0, 255, 0, 0.3);">{{/rollTotal() computed::roll1 0}}
                 {{#rollTotal() computed::roll1 1}}<div style="background-color:rgba(100, 30, 220, 0.4);">{{/rollTotal() computed::roll1 1}}
@@ -91,21 +65,22 @@
                 </div>
     
                 
+                {{#rollGreater() dice_str 1}}
                 {{#rollTotal() computed::roll2 0}}<div style="background-color:rgba(0, 255, 0, 0.3);">{{/rollTotal() computed::roll2 0}}
                 {{#rollTotal() computed::roll2 1}}<div style="background-color:rgba(100, 30, 220, 0.4);">{{/rollTotal() computed::roll2 1}}
                 {{#rollTotal() computed::roll2 2}}<div style="background-color:rgba(255, 68, 0, 0.6);">{{/rollTotal() computed::roll2 2}}
                 {{#rollTotal() computed::roll2 3}}<div style="background-color: rgba(0, 0, 0, 0.4);">{{/rollTotal() computed::roll2 3}}
-                {{#rollTotal() computed::roll2 4}}<div style="visibility:hidden;">{{/rollTotal() computed::roll2 4}}
                     <h4>D2 = {{roll2}}</h4>
                 </div>
+                {{/rollGreater() dice_str 1}}
     
-                
+                {{#rollGreater() dice_str 2}}
                 {{#rollTotal() computed::roll3 0}}<div style="background-color:rgba(0, 255, 0, 0.3);">{{/rollTotal() computed::roll3 0}}
                 {{#rollTotal() computed::roll3 1}}<div style="background-color:rgba(100, 30, 220, 0.4);">{{/rollTotal() computed::roll3 1}}
                 {{#rollTotal() computed::roll3 2}}<div style="background-color:rgba(255, 68, 0, 0.6);">{{/rollTotal() computed::roll3 2}}
                 {{#rollTotal() computed::roll3 3}}<div style="background-color: rgba(0, 0, 0, 0.4);">{{/rollTotal() computed::roll3 3}}
-                {{#rollTotal() computed::roll3 4}}<div style="visibility:hidden;">{{/rollTotal() computed::roll3 4}}
                     <h4>D3 = {{roll3}}</h4>
                 </div>
+                {{/rollGreater() dice_str 2}}
     </div>
 </rolltemplate>

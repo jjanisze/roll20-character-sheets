@@ -419,19 +419,22 @@ const ROLL_MODE_COMBAT_MELEE = "combat-melee";
 
 function umiejetnoscHandler(attribute, info) {
     let base_wsp = stats2wsp[attribute];
-    getAttrs(["final_test_level", "modi_battle", "modi_open", "selectedWeaponHand", 
+    getAttrs(["level", "final_test_level", "modi_battle", "modi_open", "selectedWeaponHand", 
         "inv_hand_left_name", "inv_hand_left_type", "inv_hand_left_id",
         "inv_hand_right_name", "inv_hand_right_type", "inv_hand_right_id", 
-        "selected_weapon_ranged_fire_button", "final_test_level_display",
+        "selected_weapon_ranged_fire_button", "final_test_level_display", "final_test_penalty",
         base_wsp, attribute], 
     function(values) {
-        let genitive = stats2genitive[attribute];
+        let skillstring = stats2genitive[attribute];
         let skill_wsp_name = stats2wsp[attribute];
         let wsp_name = wsp2accusative[skill_wsp_name];
         let skill = (parseInt(values[attribute])||0);
         let statbase = parseInt(values[base_wsp]);
         let modi_battle = (parseInt(values.modi_battle)||0);
         let modi_open = (parseInt(values.modi_open)||0);
+        let level_base = ((parseInt(values.level))||0);
+        let levelLabel = levelLabels[level_base];
+        let final_test_penalty = (parseInt(values.final_test_penalty)||0) - startingPercent[level_base];
         
         let left_hand_name = String(values.inv_hand_left_name);
         let left_hand_type = String(values.inv_hand_left_type);
@@ -447,7 +450,8 @@ function umiejetnoscHandler(attribute, info) {
         let selected_hand_type = "";
         let selected_hand_id = "";
 
-        
+        let skillvalue = "";
+
         switch(selected_hand) {
             case HAND_LEFT:
                 selected_hand_name = left_hand_name;
@@ -469,12 +473,18 @@ function umiejetnoscHandler(attribute, info) {
 
         let rollMode = ROLL_MODE_NON_COMBAT;
         let dice_count = 0;
+        skillstring = ( modi_open ? "otwarty " : "zamknięty " ) + skillstring;
+        skillvalue = "Poziom: "+skill;
         if( !modi_battle ){
             dice_count = 3;
             // Slider - no skill means test is harder by 1 level. Git gud.
             let advantage = skill ? parseInt(skill/4) : -1; 
             final_test_level -= advantage;
+            if( advantage != 0 ) {
+                skillvalue += ", Suwak:" + advantage;
+            }
         } else {
+            skillstring = "bojowy "+skillstring
             switch(selected_hand) {
                 case HAND_LEFT:
                 case HAND_RIGHT:
@@ -526,12 +536,12 @@ function umiejetnoscHandler(attribute, info) {
         }
         
 
-        log(`Rolling mode ${rollMode} with hand:${selected_hand} (${selected_hand_type} - ${selected_hand_name}) ${dice_str}`);
+        log(`Rolling ${skillstring} (${skillvalue}) mode ${rollMode} with hand:${selected_hand} (${selected_hand_type} - ${selected_hand_name}) ${dice_str}`);
 
 
         switch(rollMode){
             case ROLL_MODE_COMBAT_RANGED_SINGLE:
-                let rstr = `&{template:${rollMode}} {{successes=[[0[computed value]]]}} ${dice_str} {{dice_count=${dice_count}}} {{finaldifficultylabel=${final_test_level_display}}} {{base_wsp_name=${wsp_name}}} {{tested_wsp_value=${default_test_value}}} {{skill_name=${genitive}}} {{skill_value=${skill}}} {{weapon_name=${selected_hand_name}}}`;
+                let rstr = `&{template:${rollMode}} {{successes=[[0[computed value]]]}} ${dice_str} {{dice_count=${dice_count}}} {{finaldifficultylabel=${final_test_level_display}}} {{base_wsp_name=${wsp_name}}} {{tested_wsp_value=${default_test_value}}} {{skill_name=${skillstring}}} {{skill_value=${skill}}} {{weapon_name=${selected_hand_name}}}`;
                 log(`rstr:${rstr}`);
                 startRoll(rstr, (results) => {
                     let x = 0;
@@ -578,94 +588,98 @@ function umiejetnoscHandler(attribute, info) {
                 break;
 
             case ROLL_MODE_NON_COMBAT:
-            startRoll(`&{template:test} {{base_wsp_name=${wsp_name}}} {{open=[[0[computed value]]]}} {{successes=[[0[computed value]]]}} {{finaldifficulty=[[0[computed value]]]}} {{skill-name=${genitive}}} ${dice_str}`, (results) => {
-                const vals = [results.results.roll1.result, results.results.roll2.result, results.results.roll3.result];
-                let x = 0;
-                
-                if( !modi_battle ){
-                    // Critical rolls ( 1 / 20 )
-                    for (x=0; x<3; ++x) {
-                        if(vals[x]==1)
-                        {
-                            final_test_level -= 1;
-                        }
-                        if(vals[x]==20)
-                        {
-                            final_test_level += 1;
+                let rollstr = `&{template:test} {{successes=[[0[computed value]]]}} {{finaldifficultylabel=[[0[computed value]]]}} {{initialdifficulty=${levelLabel}}} {{base_wsp_name=${wsp_name}}} {{modi-open=[[${modi_open}]]}} {{skill-name=${skillstring}}} {{skillval=${skillvalue}}} {{penalties=${final_test_penalty}}} ${dice_str}`;
+                log("!!!ROLLING!!! "+rollstr);
+                startRoll(rollstr, (results) => {
+                    const vals = [results.results.roll1.result, results.results.roll2.result, results.results.roll3.result];
+                    let x = 0;
+                    
+                    if( !modi_battle ){
+                        // Critical rolls ( 1 / 20 )
+                        for (x=0; x<3; ++x) {
+                            if(vals[x]==1)
+                            {
+                                final_test_level -= 1;
+                            }
+                            if(vals[x]==20)
+                            {
+                                final_test_level += 1;
+                            }
                         }
                     }
-                }
-                
-                // Constrain
-                final_test_level = final_test_level < 0 ? 0 : (final_test_level > 8 ? 8 : final_test_level);
+                    
+                    // Constrain
+                    final_test_level = final_test_level < 0 ? 0 : (final_test_level > 8 ? 8 : final_test_level);
 
-                // Successes and failures
-                
-                let dice_style = [3,3,3];
-                let vals_s = vals.concat().sort(function(a, b){return a-b});
-                let statreq = statbase - difficulties[final_test_level];
-                let succ = 0;
-                if (modi_open) {
-                    let vals_sc = vals_s.concat();
-                    while ( skill_remaining > 0 ) {
-                        if (vals_sc[0] == vals_sc[1]) {
-                            vals_sc[0] -= 1;
-                            dice_style[0] = 1;
-                        } else {
-                            vals_sc[1] -= 1;
-                        }
-                        skill_remaining -= 1;
-                    }
-                    vals_sc[1] = vals_sc[1] < 1 ? 1 : vals_sc[1];
-                    succ = statreq - vals_sc[1];
-                    if( succ>=0 ) {
-                        dice_style[1] = 0;
-                    } else {
-                        dice_style[1] = 2;
-                    }
-                } else {
-                    for (x=0; x<3; ++x) {
-                        if(vals_s[x] <= statreq) {
-                            succ += 1;
-                            dice_style[x] = 0;
-                        } else {
-                            if ( vals_s[x] - skill_remaining <= statreq && statreq > 0 ) {
-                                skill_remaining -= (vals_s[x] - statreq);
-                                succ += 1;
-                                dice_style[x] = 1;
+                    // Successes and failures
+                    
+                    let dice_style = [3,3,3];
+                    let vals_s = vals.concat().sort(function(a, b){return a-b});
+                    let statreq = statbase - difficulties[final_test_level];
+                    let succ = 0;
+                    if (modi_open) {
+                        let vals_sc = vals_s.concat();
+                        while ( skill_remaining > 0 ) {
+                            if (vals_sc[0] == vals_sc[1]) {
+                                vals_sc[0] -= 1;
+                                dice_style[0] = 1;
                             } else {
-                                dice_style[x] = 2;
+                                vals_sc[1] -= 1;
+                            }
+                            skill_remaining -= 1;
+                        }
+                        vals_sc[1] = vals_sc[1] < 1 ? 1 : vals_sc[1];
+                        succ = statreq - vals_sc[1];
+                        if( succ>=0 ) {
+                            dice_style[1] = 0;
+                        } else {
+                            dice_style[1] = 2;
+                        }
+                    } else {
+                        for (x=0; x<3; ++x) {
+                            if(vals_s[x] <= statreq) {
+                                succ += 1;
+                                dice_style[x] = 0;
+                            } else {
+                                if ( vals_s[x] - skill_remaining <= statreq && statreq > 0 ) {
+                                    skill_remaining -= (vals_s[x] - statreq);
+                                    succ += 1;
+                                    dice_style[x] = 1;
+                                } else {
+                                    dice_style[x] = 2;
+                                }
+                            }
+                        }    
+                    }
+
+                    let dice_unsort = [3,3,3];
+                        for(x=0; x<3; ++x) {
+                            for(let y=0; y<3; ++y) {
+                                if(vals[x]==vals_s[y]) {
+                                    dice_unsort[x] = dice_style[y];
+                                    vals_s[y] = -1;
+                                    vals[x] = 0;
+                                    break;
+                                }
                             }
                         }
-                    }    
-                }
-
-                let dice_unsort = [3,3,3];
-                    for(x=0; x<3; ++x) {
-                        for(let y=0; y<3; ++y) {
-                            if(vals[x]==vals_s[y]) {
-                                dice_unsort[x] = dice_style[y];
-                                vals_s[y] = -1;
-                                vals[x] = 0;
-                                break;
-                            }
+                    
+                    final_test_level = final_test_level > levelLabels.length ? levelLabels.length - 1 : final_test_level;
+                    final_test_level = final_test_level < 0 ? 0 : final_test_level;
+                    let label = levelLabels[final_test_level];
+                    log("LLLL "+label);
+                    finishRoll(
+                        results.rollId,
+                        {
+                            roll1: dice_unsort[0],
+                            roll2: dice_unsort[1],
+                            roll3: dice_unsort[2],
+                            finaldifficultylabel: label,
+                            successes : succ,
                         }
-                    }
-                
-
-                finishRoll(
-                    results.rollId,
-                    {
-                        roll1: dice_unsort[0],
-                        roll2: dice_unsort[1],
-                        roll3: dice_unsort[2],
-                        finaldifficulty: final_test_level,
-                        successes : succ,
-                        open : modi_open,
-                    }
-                );
-            });
-            break;
+                    );
+                });
+                break;
         }
     });
 }
