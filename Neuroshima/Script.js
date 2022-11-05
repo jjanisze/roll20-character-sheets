@@ -254,7 +254,7 @@ on("change:level change:modi_battle change:modi_open change:modi_penalties chang
         let modi_armor_penalties = (parseInt(values.modi_armor_penalties)||0);
         let total_armor_penalties = (parseInt(values.total_armor_penalties)||0);
         let custom_penalty = (parseInt(values.custom_penalty)||0);
-        
+        let modi_battle = (parseInt(values.modi_battle)||0);
         let modi_encumberace_penalties = (parseInt(values.modi_encumberace_penalties)||0);
         let encumberace_penalties = (parseInt(values.encumberace_penalties)||0);
         let modi_distance_penalty = (parseInt(values.modi_distance_penalty)||0);
@@ -277,6 +277,12 @@ on("change:level change:modi_battle change:modi_open change:modi_penalties chang
             }
         }
         let final_test_level_label = levelLabels[final_test_level];
+
+        // Drop weapon if holding one
+        if( ! modi_battle ) {
+            setWeaponSkillsSheet(HAND_NONE);
+        }
+
         setAttrs({                            
             "final_test_level": final_test_level,
             "final_test_penalty": final_test_penalty,
@@ -525,7 +531,7 @@ function umiejetnoscHandler(attribute, info) {
 
         switch(rollMode){
             case ROLL_MODE_COMBAT_RANGED_SINGLE:
-                let rstr = `&{template:${rollMode}} {{successes=[[0[computed value]]]}} ${dice_str} {{finaldifficultylabel=${final_test_level_display}}} {{base_wsp_name=${wsp_name}}} {{tested_wsp_value=${default_test_value}}} {{skill_name=${genitive}}} {{skill_value=${skill}}} {{weapon_name=${selected_hand_name}}}`;
+                let rstr = `&{template:${rollMode}} {{successes=[[0[computed value]]]}} ${dice_str} {{dice_count=${dice_count}}} {{finaldifficultylabel=${final_test_level_display}}} {{base_wsp_name=${wsp_name}}} {{tested_wsp_value=${default_test_value}}} {{skill_name=${genitive}}} {{skill_value=${skill}}} {{weapon_name=${selected_hand_name}}}`;
                 log(`rstr:${rstr}`);
                 startRoll(rstr, (results) => {
                     let x = 0;
@@ -533,7 +539,7 @@ function umiejetnoscHandler(attribute, info) {
                     for(x=0; x<dice_count; ++x) {
                         vals.push(results.results[`roll${x+1}`].result);
                     }
-                    let dice_style = Array(dice_count).fill(3);
+                    let dice_style = Array(dice_count).fill(4);
                     let vals_s = vals.concat().sort( function(a, b){return a-b} );
                     let success_count = 0;
                     for (x=0; x<dice_count; ++x) {
@@ -549,7 +555,7 @@ function umiejetnoscHandler(attribute, info) {
                             }
                         }
                     }
-                    let dice_unsort = Array(dice_count).fill(3);
+                    let dice_unsort = Array(3).fill(4);
                     for(x=0; x<dice_count; ++x) {
                         for(let y=0; y<dice_count; ++y) {
                             if(vals[x]==vals_s[y]) {
@@ -563,8 +569,9 @@ function umiejetnoscHandler(attribute, info) {
                     let rollResult = {
                         successes : success_count,
                     };
-                    for(x=0; x<dice_count; ++x) {
+                    for(x=0; x<3; ++x) {
                         rollResult[`roll${x+1}`] = dice_unsort[x];
+                        log(`Roll ${x+1} = ${dice_unsort[x]}`)
                     }
                     finishRoll(results.rollId, rollResult);    
                 });

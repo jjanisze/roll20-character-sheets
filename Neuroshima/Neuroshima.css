@@ -985,10 +985,16 @@ table.wspolczynniki input[type=number].wsp-star-display {
 	font-family: 'Roboto Mono', monospace;
 	margin-bottom:-2px;
 	height:100%;
-	font-size:13px;
+	font-size:11px;
 	color: #000;
 }
-
+.charsheet div.divTable h4 {
+	font-family: 'Roboto Mono', monospace;
+	margin-bottom:-2px;
+	height:100%;
+	font-size:14px;
+	color: #FFF;
+}
 
 
 /*************************** EKWIPUNEK ****************************/
@@ -1030,13 +1036,16 @@ table.wspolczynniki input[type=number].wsp-star-display {
 
 /** Reverse 1 - 20 highlight from default (20 good) to 1 good **/
 .sheet-rolltemplate-test .inlinerollresult.fullfail,
+.sheet-rolltemplate-combat-ranged-single .inlinerollresult.fullfail,
 .span.inlinerollresult.showtip.tipsy-n-right.fullfail,
-.sheet-rolltemplate-test .showtip.tipsy-n-right.fullfail {
+.sheet-rolltemplate-test .showtip.tipsy-n-right.fullfail,
+.sheet-rolltemplate-combat-ranged-single .showtip.tipsy-n-right.fullfail {
 	border: 2px solid #3FB315 !important;
 
 }
 
-.sheet-rolltemplate-test .inlinerollresult.fullcrit {
+.sheet-rolltemplate-test .inlinerollresult.fullcrit,
+.sheet-rolltemplate-combat-ranged-single .inlinerollresult.fullcrit{
 	border: 2px solid #B31515 !important;
 }
 

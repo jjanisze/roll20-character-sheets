@@ -590,7 +590,7 @@
                     <button type="action" name="act_use_slot_left">L</button>
                     Ręka lewa
                 </div>
-                <div><button type="action" name="act_use_slot_none">Upuść</button></div>
+                <div><button type="action" name="act_use_slot_none">Opuść broń</button></div>
                 <div>
                     Ręka prawa
                     <button type="action" name="act_use_slot_right">R</button>
@@ -1324,9 +1324,9 @@
             <div class="divTable">
                 <div class="divTableHeading">
                     <div class="divTableRow">
-                        <div class="divTableHead">Nazwa</div>
-                        <div class="divTableHead">W magazynku</div>
-                        <div class="divTableHead">Linia oporządzenia</div>
+                        <div class="divTableHead"><h4>Nazwa</h4></div>
+                        <div class="divTableHead"><h4>W magazynku</h4></div>
+                        <div class="divTableHead"><h4>Linia oporządzenia</h4></div>
                     </div>
                 </div>
                 <div class="divTableBody">
@@ -1980,7 +1980,7 @@ on("change:level change:modi_battle change:modi_open change:modi_penalties chang
         let modi_armor_penalties = (parseInt(values.modi_armor_penalties)||0);
         let total_armor_penalties = (parseInt(values.total_armor_penalties)||0);
         let custom_penalty = (parseInt(values.custom_penalty)||0);
-        
+        let modi_battle = (parseInt(values.modi_battle)||0);
         let modi_encumberace_penalties = (parseInt(values.modi_encumberace_penalties)||0);
         let encumberace_penalties = (parseInt(values.encumberace_penalties)||0);
         let modi_distance_penalty = (parseInt(values.modi_distance_penalty)||0);
@@ -2003,6 +2003,12 @@ on("change:level change:modi_battle change:modi_open change:modi_penalties chang
             }
         }
         let final_test_level_label = levelLabels[final_test_level];
+
+        // Drop weapon if holding one
+        if( ! modi_battle ) {
+            setWeaponSkillsSheet(HAND_NONE);
+        }
+
         setAttrs({                            
             "final_test_level": final_test_level,
             "final_test_penalty": final_test_penalty,
@@ -2251,7 +2257,7 @@ function umiejetnoscHandler(attribute, info) {
 
         switch(rollMode){
             case ROLL_MODE_COMBAT_RANGED_SINGLE:
-                let rstr = `&{template:${rollMode}} {{successes=[[0[computed value]]]}} ${dice_str} {{finaldifficultylabel=${final_test_level_display}}} {{base_wsp_name=${wsp_name}}} {{tested_wsp_value=${default_test_value}}} {{skill_name=${genitive}}} {{skill_value=${skill}}} {{weapon_name=${selected_hand_name}}}`;
+                let rstr = `&{template:${rollMode}} {{successes=[[0[computed value]]]}} ${dice_str} {{dice_count=${dice_count}}} {{finaldifficultylabel=${final_test_level_display}}} {{base_wsp_name=${wsp_name}}} {{tested_wsp_value=${default_test_value}}} {{skill_name=${genitive}}} {{skill_value=${skill}}} {{weapon_name=${selected_hand_name}}}`;
                 log(`rstr:${rstr}`);
                 startRoll(rstr, (results) => {
                     let x = 0;
@@ -2259,7 +2265,7 @@ function umiejetnoscHandler(attribute, info) {
                     for(x=0; x<dice_count; ++x) {
                         vals.push(results.results[`roll${x+1}`].result);
                     }
-                    let dice_style = Array(dice_count).fill(3);
+                    let dice_style = Array(dice_count).fill(4);
                     let vals_s = vals.concat().sort( function(a, b){return a-b} );
                     let success_count = 0;
                     for (x=0; x<dice_count; ++x) {
@@ -2275,7 +2281,7 @@ function umiejetnoscHandler(attribute, info) {
                             }
                         }
                     }
-                    let dice_unsort = Array(dice_count).fill(3);
+                    let dice_unsort = Array(3).fill(4);
                     for(x=0; x<dice_count; ++x) {
                         for(let y=0; y<dice_count; ++y) {
                             if(vals[x]==vals_s[y]) {
@@ -2289,8 +2295,9 @@ function umiejetnoscHandler(attribute, info) {
                     let rollResult = {
                         successes : success_count,
                     };
-                    for(x=0; x<dice_count; ++x) {
+                    for(x=0; x<3; ++x) {
                         rollResult[`roll${x+1}`] = dice_unsort[x];
+                        log(`Roll ${x+1} = ${dice_unsort[x]}`)
                     }
                     finishRoll(results.rollId, rollResult);    
                 });
@@ -3043,12 +3050,13 @@ af_btnlist.forEach((afi) => {
 
 <rolltemplate class="sheet-rolltemplate-combat-ranged-single">
     <div class="sheet-template-container">
-        <h1>{{finaldifficultylabel}} test {{skill_name}} używając {{weapon_name}} na {{wsp_name}}</h1>
+        <h1>{{finaldifficultylabel}} test {{skill_name}} używając {{weapon_name}} na {{base_wsp_name}}</h1>
 
             {{#rollTotal() computed::roll1 0}}<div style="background-color:rgba(0, 255, 0, 0.3);">{{/rollTotal() computed::roll1 0}}
                 {{#rollTotal() computed::roll1 1}}<div style="background-color:rgba(100, 30, 220, 0.4);">{{/rollTotal() computed::roll1 1}}
                 {{#rollTotal() computed::roll1 2}}<div style="background-color:rgba(255, 68, 0, 0.6);">{{/rollTotal() computed::roll1 2}}
                 {{#rollTotal() computed::roll1 3}}<div style="background-color: rgba(0, 0, 0, 0.4);">{{/rollTotal() computed::roll1 3}}
+                {{#rollTotal() computed::roll1 4}}<div style="visibility:hidden;">{{/rollTotal() computed::roll1 4}}
                     <h4>D1 = {{roll1}}</h4>
                 </div>
     
@@ -3057,6 +3065,7 @@ af_btnlist.forEach((afi) => {
                 {{#rollTotal() computed::roll2 1}}<div style="background-color:rgba(100, 30, 220, 0.4);">{{/rollTotal() computed::roll2 1}}
                 {{#rollTotal() computed::roll2 2}}<div style="background-color:rgba(255, 68, 0, 0.6);">{{/rollTotal() computed::roll2 2}}
                 {{#rollTotal() computed::roll2 3}}<div style="background-color: rgba(0, 0, 0, 0.4);">{{/rollTotal() computed::roll2 3}}
+                {{#rollTotal() computed::roll2 4}}<div style="visibility:hidden;">{{/rollTotal() computed::roll2 4}}
                     <h4>D2 = {{roll2}}</h4>
                 </div>
     
@@ -3065,6 +3074,7 @@ af_btnlist.forEach((afi) => {
                 {{#rollTotal() computed::roll3 1}}<div style="background-color:rgba(100, 30, 220, 0.4);">{{/rollTotal() computed::roll3 1}}
                 {{#rollTotal() computed::roll3 2}}<div style="background-color:rgba(255, 68, 0, 0.6);">{{/rollTotal() computed::roll3 2}}
                 {{#rollTotal() computed::roll3 3}}<div style="background-color: rgba(0, 0, 0, 0.4);">{{/rollTotal() computed::roll3 3}}
+                {{#rollTotal() computed::roll3 4}}<div style="visibility:hidden;">{{/rollTotal() computed::roll3 4}}
                     <h4>D3 = {{roll3}}</h4>
                 </div>
     </div>
