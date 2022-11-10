@@ -247,7 +247,7 @@ const levelLabels = ["Łatwy", "Przeciętny", "Problematyczny", "Trudny", "Bardz
 
 on("change:level change:modi_battle change:modi_open change:modi_penalties change:total_wounds change:modi_armor_penalties change:total_armor_penalties change:modi_encumberace_penalties change:encumberace_penalties change:modi_distance_penalty change:weapon_attack_penalty change:modi_custom_penalty change:custom_penalty ", function() {  
     getAttrs([	"level", "modi_battle","modi_open", "modi_penalties","total_wounds", 
-    "modi_armor_penalties","total_armor_penalties", "modi_encumberace_penalties", "encumberace_penalties", "modi_distance_penalty", "weapon_attack_penalty", "custom_penalty", "modi_custom_penalty"], function(values) {
+    "modi_armor_penalties","total_armor_penalties", "modi_encumberace_penalties", "encumberace_penalties", "modi_distance_penalty", "weapon_attack_penalty", "custom_penalty", "modi_custom_penalty", "selectedWeaponHand"], function(values) {
         let level = ((parseInt(values.level))||0);
         let modi_penalties = (parseInt(values.modi_penalties)||0);
         let total_wounds = (parseInt(values.total_wounds)||0);
@@ -260,6 +260,7 @@ on("change:level change:modi_battle change:modi_open change:modi_penalties chang
         let modi_distance_penalty = (parseInt(values.modi_distance_penalty)||0);
         let distance_penalty = (parseInt(values.weapon_attack_penalty)||0);
         let modi_custom_penalty = (parseInt(values.modi_custom_penalty)||0);
+        let selectedWeaponHand = String(values.selectedWeaponHand);
 
         let final_test_penalty =(   startingPercent[level] + 
                                     ( modi_penalties ? total_wounds : 0 ) +
@@ -278,9 +279,14 @@ on("change:level change:modi_battle change:modi_open change:modi_penalties chang
         }
         let final_test_level_label = levelLabels[final_test_level];
 
-        // Drop weapon if holding one
         if( ! modi_battle ) {
+            // Lower weapon if holding one
             setWeaponSkillsSheet(HAND_NONE);
+        } else {
+            if( selectedWeaponHand == HAND_NONE ) {
+                // Raise right hand weapon by default
+                setWeaponSkillsSheet(HAND_RIGHT);
+            }
         }
 
         setAttrs({                            
@@ -425,58 +431,59 @@ function umiejetnoscHandler(attribute, info) {
         "selected_weapon_ranged_fire_button", "final_test_level_display", "final_test_penalty",
         base_wsp, attribute], 
     function(values) {
-        let skillstring = stats2genitive[attribute];
-        let skill_wsp_name = stats2wsp[attribute];
-        let wsp_name = wsp2accusative[skill_wsp_name];
-        let skill = (parseInt(values[attribute])||0);
+        let skillBased = true;
+        // Common
+        let wsp_name = "";
         let statbase = parseInt(values[base_wsp]);
-        let modi_battle = (parseInt(values.modi_battle)||0);
-        let modi_open = (parseInt(values.modi_open)||0);
         let level_base = ((parseInt(values.level))||0);
         let levelLabel = levelLabels[level_base];
+        let final_test_level = (parseInt(values.final_test_level)||0);
+        let default_test_value =  statbase - difficulties[final_test_level];
         let final_test_penalty = (parseInt(values.final_test_penalty)||0) - startingPercent[level_base];
+        let final_test_level_display = (String(values.final_test_level_display)||"??");
+        let modi_battle = (parseInt(values.modi_battle)||0);
+        let modi_open = (parseInt(values.modi_open)||0);
+        let rollMode = ROLL_MODE_NON_COMBAT;
+        let dice_count = 3;
+        let skillstring = ( modi_open ? "otwarty " : "zamknięty " )
+
+        // Skill-specific
+        let skill_wsp_name = ""
+        let skill = 0;
+        let skill_remaining = 0;
+        let skillvalue = "";
+        if( skillBased ) {
+            skillstring += stats2genitive[attribute];
+            skill_wsp_name = stats2wsp[attribute];
+            skill = (parseInt(values[attribute])||0);
+            skill_remaining = skill;
+            skillvalue = "Umiejętność: " + skill;
+            wsp_name = wsp2accusative[skill_wsp_name];
+        } else {
+            // Wspolczynnik test only
+        }
         
-        let left_hand_name = String(values.inv_hand_left_name);
-        let left_hand_type = String(values.inv_hand_left_type);
-        let left_hand_id = String(values.inv_hand_left_id);
-        let right_hand_name = String(values.inv_hand_right_name);
-        let right_hand_type = String(values.inv_hand_right_type);
-        let right_hand_id = String(values.inv_hand_right_id);
+        // Inventory
         let selected_hand = String(values.selectedWeaponHand);
         let selected_weapon_ranged_fire_button = (parseInt(values.selected_weapon_ranged_fire_button)||-1);
-        let final_test_level_display = (String(values.final_test_level_display)||"??");
-        
         let selected_hand_name = "";
         let selected_hand_type = "";
-        let selected_hand_id = "";
-
-        let skillvalue = "";
-
         switch(selected_hand) {
             case HAND_LEFT:
-                selected_hand_name = left_hand_name;
-                selected_hand_type = left_hand_type;
-                selected_hand_id = left_hand_id;
+                selected_hand_name = String(values.inv_hand_left_name);
+                selected_hand_type = String(values.inv_hand_left_type);
+                selected_hand_id = String(values.inv_hand_left_id);
             case HAND_RIGHT:
-                selected_hand_name = right_hand_name;
-                selected_hand_type = right_hand_type;
-                selected_hand_id = right_hand_id;
+                selected_hand_name = String(values.inv_hand_right_name);
+                selected_hand_type = String(values.inv_hand_right_type);
+                selected_hand_id = String(values.inv_hand_right_id);
                 break;
             default:
                 selected_hand = HAND_NONE;
         }
-        
-        let skill_remaining = skill;
-        // Unadjusted for slider and 1/20s 
-        let final_test_level = (parseInt(values.final_test_level)||0);
-        let default_test_value =  statbase - difficulties[final_test_level];
 
-        let rollMode = ROLL_MODE_NON_COMBAT;
-        let dice_count = 0;
-        skillstring = ( modi_open ? "otwarty " : "zamknięty " ) + skillstring;
-        skillvalue = "Poziom: "+skill;
+        // Determine and describe roll mode
         if( !modi_battle ){
-            dice_count = 3;
             // Slider - no skill means test is harder by 1 level. Git gud.
             let advantage = skill ? parseInt(skill/4) : -1; 
             final_test_level -= advantage;
@@ -529,20 +536,19 @@ function umiejetnoscHandler(attribute, info) {
             } 
         }
 
+        let rstr = `&{template:${rollMode}} {{successes=[[0[computed value]]]}} {{finaldifficultylabel=[[0[computed value]]]}}`;
         // Create string with appropriate number of dice rolls
-        let dice_str = ""
         for(let i = 0; i<dice_count; ++i) {
-            dice_str = dice_str.concat(`{{roll${i+1}=[[1d20]]}} `);
+            rstr += `{{roll${i+1}=[[1d20]]}} `;
         }
+        rstr += `{{base_wsp_name=${wsp_name}}} {{skill-name=${skillstring}}} {{skillval=${skillvalue}}} `
+        rstr += `{{initialdifficulty=${levelLabel}}} {{modi-open=[[${modi_open}]]}}  {{penalties=${final_test_penalty}}}`;
+        log("TESTICULAR0");
+        log(`Roll string: ${rstr}`);
         
-
-        log(`Rolling ${skillstring} (${skillvalue}) mode ${rollMode} with hand:${selected_hand} (${selected_hand_type} - ${selected_hand_name}) ${dice_str}`);
-
-
-        switch(rollMode){
+        switch(rollMode){    
             case ROLL_MODE_COMBAT_RANGED_SINGLE:
-                let rstr = `&{template:${rollMode}} {{successes=[[0[computed value]]]}} ${dice_str} {{dice_count=${dice_count}}} {{finaldifficultylabel=${final_test_level_display}}} {{base_wsp_name=${wsp_name}}} {{tested_wsp_value=${default_test_value}}} {{skill_name=${skillstring}}} {{skill_value=${skill}}} {{weapon_name=${selected_hand_name}}}`;
-                log(`rstr:${rstr}`);
+                rstr += `{{dice_count=${dice_count}}} {{tested_wsp_value=${default_test_value}}}  {{weapon_name=${selected_hand_name}}}`;
                 startRoll(rstr, (results) => {
                     let x = 0;
                     let vals = [];
@@ -588,17 +594,17 @@ function umiejetnoscHandler(attribute, info) {
                 break;
 
             case ROLL_MODE_NON_COMBAT:
-                let rollstr = `&{template:test} {{successes=[[0[computed value]]]}} {{finaldifficultylabel=[[0[computed value]]]}} {{initialdifficulty=${levelLabel}}} {{base_wsp_name=${wsp_name}}} {{modi-open=[[${modi_open}]]}} {{skill-name=${skillstring}}} {{skillval=${skillvalue}}} {{penalties=${final_test_penalty}}} ${dice_str}`;
-                log("!!!ROLLING!!! "+rollstr);
-                startRoll(rollstr, (results) => {
+                // rstr += ``;
+                startRoll(rstr, (results) => {
                     const vals = [results.results.roll1.result, results.results.roll2.result, results.results.roll3.result];
                     let x = 0;
                     
+                    // 1 / 20 rolls +1/-1 difficulty
                     if( !modi_battle ){
                         // Critical rolls ( 1 / 20 )
                         for (x=0; x<3; ++x) {
                             if(vals[x]==1)
-                            {
+                            { 
                                 final_test_level -= 1;
                             }
                             if(vals[x]==20)
@@ -607,28 +613,31 @@ function umiejetnoscHandler(attribute, info) {
                             }
                         }
                     }
-                    
-                    // Constrain
                     final_test_level = final_test_level < 0 ? 0 : (final_test_level > 8 ? 8 : final_test_level);
 
                     // Successes and failures
-                    
+                    log("TESTICULAR1");
                     let dice_style = [3,3,3];
                     let vals_s = vals.concat().sort(function(a, b){return a-b});
                     let statreq = statbase - difficulties[final_test_level];
                     let succ = 0;
                     if (modi_open) {
                         let vals_sc = vals_s.concat();
-                        while ( skill_remaining > 0 ) {
-                            if (vals_sc[0] == vals_sc[1]) {
-                                vals_sc[0] -= 1;
-                                dice_style[0] = 1;
-                            } else {
-                                vals_sc[1] -= 1;
+                        // Skills flow
+                        if( skillBased ) {
+                            while ( skill_remaining > 0 ) {
+                                if (vals_sc[0] == vals_sc[1]) {
+                                    vals_sc[0] -= 1;
+                                    dice_style[0] = 1;
+                                } else {
+                                    vals_sc[1] -= 1;
+                                }
+                                skill_remaining -= 1;
                             }
-                            skill_remaining -= 1;
+                            vals_sc[1] = vals_sc[1] < 1 ? 1 : vals_sc[1];
                         }
-                        vals_sc[1] = vals_sc[1] < 1 ? 1 : vals_sc[1];
+                        
+                        // Skills + wsp flow
                         succ = statreq - vals_sc[1];
                         if( succ>=0 ) {
                             dice_style[1] = 0;
@@ -664,10 +673,11 @@ function umiejetnoscHandler(attribute, info) {
                             }
                         }
                     
+                    // Clamp level
                     final_test_level = final_test_level > levelLabels.length ? levelLabels.length - 1 : final_test_level;
                     final_test_level = final_test_level < 0 ? 0 : final_test_level;
                     let label = levelLabels[final_test_level];
-                    log("LLLL "+label);
+
                     finishRoll(
                         results.rollId,
                         {
