@@ -1003,12 +1003,12 @@ table.wspolczynniki input[type=number].wsp-star-display {
 /******************************************************************/
 /*************************** ROLL TEMPLATES ***********************/
 
-.sheet-rolltemplate-test div.sheet-template-container {
+.sheet-rolltemplate-non-combat div.sheet-template-container {
 	border: 2px solid #000 !important;
 	border-radius: 3px 3px 3px 3px;
 }
 
-.sheet-rolltemplate-test .sheet-template-header {
+.sheet-rolltemplate-non-combat .sheet-template-header {
 	background-color: rgba(112, 32, 130,1);
 	color: #000;
 	padding: 2px;
@@ -1035,16 +1035,16 @@ table.wspolczynniki input[type=number].wsp-star-display {
 **/
 
 /** Reverse 1 - 20 highlight from default (20 good) to 1 good **/
-.sheet-rolltemplate-test .inlinerollresult.fullfail,
+.sheet-rolltemplate-non-combat .inlinerollresult.fullfail,
 .sheet-rolltemplate-combat-ranged-single .inlinerollresult.fullfail,
 .span.inlinerollresult.showtip.tipsy-n-right.fullfail,
-.sheet-rolltemplate-test .showtip.tipsy-n-right.fullfail,
+.sheet-rolltemplate-non-combat .showtip.tipsy-n-right.fullfail,
 .sheet-rolltemplate-combat-ranged-single .showtip.tipsy-n-right.fullfail {
 	border: 2px solid #3FB315 !important;
 
 }
 
-.sheet-rolltemplate-test .inlinerollresult.fullcrit,
+.sheet-rolltemplate-non-combat .inlinerollresult.fullcrit,
 .sheet-rolltemplate-combat-ranged-single .inlinerollresult.fullcrit{
 	border: 2px solid #B31515 !important;
 }
