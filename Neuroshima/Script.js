@@ -586,11 +586,12 @@ function umiejetnoscHandler(wspname, skillname, info) {
         }
         rstr += `{{base_wsp_name=${wsp_name}}} {{wsp_val=${statbase}}} {{skill-name=${skillstring}}} {{skillval=${skillvalue}}} `
         rstr += `{{initialdifficulty=${levelLabel}}} {{modi-open=[[${modi_open}]]}}  {{penalties_str=${penalty_string}}} {{penalties_sum_str=${penalty_sum_string}}}`;
-        log(`Roll string: ${rstr}`);
+        
         
         switch(rollMode){    
             case ROLL_MODE_COMBAT_RANGED_SINGLE:
-                rstr += `{{dice_count=${dice_count}}} {{tested_wsp_value=${default_test_value}}}  {{weapon_name=${selected_hand_name}}}`;
+                rstr += ` {{dice_count=${dice_count}}} {{weapon_name=${selected_hand_name}}}`;
+                log(`Roll string: ${rstr}`);
                 startRoll(rstr, (results) => {
                     let x = 0;
                     let vals = [];
@@ -627,7 +628,7 @@ function umiejetnoscHandler(wspname, skillname, info) {
                     let rollResult = {
                         successes : success_count,
                     };
-                    for(x=0; x<3; ++x) {
+                    for(x=0; x<dice_count; ++x) {
                         rollResult[`roll${x+1}`] = dice_unsort[x];
                         log(`Roll ${x+1} = ${dice_unsort[x]}`)
                     }
@@ -636,7 +637,7 @@ function umiejetnoscHandler(wspname, skillname, info) {
                 break;
 
             case ROLL_MODE_NON_COMBAT:
-                // rstr += ``;
+                log(`Roll string: ${rstr}`);
                 startRoll(rstr, (results) => {
                     const vals = [results.results.roll1.result, results.results.roll2.result, results.results.roll3.result];
                     let x = 0;
