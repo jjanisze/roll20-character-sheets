@@ -590,7 +590,7 @@ function umiejetnoscHandler(wspname, skillname, info) {
         
         switch(rollMode){    
             case ROLL_MODE_COMBAT_RANGED_SINGLE:
-                rstr += ` {{dice_count=${dice_count}}} {{weapon_name=${selected_hand_name}}}`;
+                rstr += ` {{dice_count=[[${dice_count}]]}} {{weapon_name=${selected_hand_name}}}`;
                 log(`Roll string: ${rstr}`);
                 startRoll(rstr, (results) => {
                     let x = 0;
@@ -598,6 +598,7 @@ function umiejetnoscHandler(wspname, skillname, info) {
                     for(x=0; x<dice_count; ++x) {
                         vals.push(results.results[`roll${x+1}`].result);
                     }
+                    
                     let dice_style = Array(dice_count).fill(4);
                     let vals_s = vals.concat().sort( function(a, b){return a-b} );
                     let success_count = 0;
@@ -614,13 +615,12 @@ function umiejetnoscHandler(wspname, skillname, info) {
                             }
                         }
                     }
-                    let dice_unsort = Array(3).fill(4);
+                    let dice_unsort = Array(dice_count).fill(4);
                     for(x=0; x<dice_count; ++x) {
                         for(let y=0; y<dice_count; ++y) {
                             if(vals[x]==vals_s[y]) {
                                 dice_unsort[x] = dice_style[y];
                                 vals_s[y] = -1;
-                                vals[x] = 0;
                                 break;
                             }
                         }
@@ -631,7 +631,9 @@ function umiejetnoscHandler(wspname, skillname, info) {
                     for(x=0; x<dice_count; ++x) {
                         rollResult[`roll${x+1}`] = dice_unsort[x];
                         log(`Roll ${x+1} = ${dice_unsort[x]}`)
+                        log(`Roll val${x}:${vals[x]}`);
                     }
+                    
                     finishRoll(results.rollId, rollResult);    
                 });
                 break;
