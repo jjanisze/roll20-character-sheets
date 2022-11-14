@@ -245,11 +245,16 @@ const levelLabels = ["Łatwy", "Przeciętny", "Problematyczny", "Trudny", "Bardz
     });
 });
 
-on("change:level change:modi_battle change:modi_open change:modi_penalties change:total_wounds change:modi_armor_penalties change:total_armor_penalties change:modi_encumberace_penalties change:encumberace_penalties change:modi_distance_penalty change:weapon_attack_penalty change:modi_custom_penalty change:custom_penalty ", function() {  
-    getAttrs([	"level", "modi_battle","modi_open", "modi_penalties","total_wounds", 
-    "modi_armor_penalties","total_armor_penalties", "modi_encumberace_penalties", 
-    "encumberace_penalties", "modi_distance_penalty", "weapon_attack_penalty", "custom_penalty", 
-    "modi_custom_penalty", "selectedWeaponHand"], function(values) {
+on("change:level change:modi_battle change:modi_open change:modi_penalties change:total_wounds change:modi_armor_penalties change:total_armor_penalties change:modi_encumberace_penalties change:encumberace_penalties change:modi_distance_penalty change:weapon_attack_penalty change:modi_inaccuracy_penalty change:inaccuracy_penalty change:modi_custom_penalty change:custom_penalty ", function() {  
+    getAttrs([	"level", 
+    "modi_battle","modi_open", 
+    "modi_penalties","total_wounds", 
+    "modi_armor_penalties","total_armor_penalties", 
+    "modi_encumberace_penalties", "encumberace_penalties", 
+    "modi_distance_penalty", "weapon_attack_penalty", 
+    "modi_inaccuracy_penalty", "inaccuracy_penalty",
+    "custom_penalty", "modi_custom_penalty", 
+    "selectedWeaponHand"], function(values) {
         let level = ((parseInt(values.level))||0);
         let modi_penalties = (parseInt(values.modi_penalties)||0);
         let total_wounds = (parseInt(values.total_wounds)||0);
@@ -261,6 +266,8 @@ on("change:level change:modi_battle change:modi_open change:modi_penalties chang
         let encumberace_penalties = (parseInt(values.encumberace_penalties)||0);
         let modi_distance_penalty = (parseInt(values.modi_distance_penalty)||0);
         let distance_penalty = (parseInt(values.weapon_attack_penalty)||0);
+        let modi_inaccuracy_penalty = (parseInt(values.modi_inaccuracy_penalty)||0);
+        let inaccuracy_penalty_value = (parseInt(values.inaccuracy_penalty)||0);
         let modi_custom_penalty = (parseInt(values.modi_custom_penalty)||0);
         let custom_penalty = (parseInt(values.custom_penalty)||0);
 
@@ -271,6 +278,7 @@ on("change:level change:modi_battle change:modi_open change:modi_penalties chang
                                     ( modi_armor_penalties ? total_armor_penalties: 0 ) +
                                     ( modi_encumberace_penalties ? encumberace_penalties : 0 ) +
                                     ( modi_distance_penalty ? distance_penalty : 0 ) +
+                                    ( modi_inaccuracy_penalty ? inaccuracy_penalty_value : 0 ) +
                                     ( modi_custom_penalty ? custom_penalty : 0 )
                                 );
         let final_test_level = 0;
@@ -437,6 +445,7 @@ function umiejetnoscHandler(wspname, skillname, info) {
     "modi_penalties", "total_wounds", 
     "modi_armor_penalties", "total_armor_penalties",
     "modi_encumberace_penalties", "encumberace_penalties",
+    "modi_inaccuracy_penalty", "inaccuracy_penalty",
     "modi_distance_penalty", "weapon_attack_penalty",
     "modi_custom_penalty", "custom_penalty",
     wspname];
@@ -456,6 +465,8 @@ function umiejetnoscHandler(wspname, skillname, info) {
         let encumberance_penalty_value = (parseInt(values.encumberace_penalties)||0);
         let modi_distance_penalty = (parseInt(values.modi_distance_penalty)||0);
         let distance_penalty_value = (parseInt(values.weapon_attack_penalty)||0);
+        let modi_inaccuracy_penalty = (parseInt(values.modi_inaccuracy_penalty)||0);
+        let inaccuracy_penalty_value = (parseInt(values.inaccuracy_penalty)||0);
         let modi_custom_penalty = (parseInt(values.modi_custom_penalty)||0);
         let custom_penalty_value = (parseInt(values.custom_penalty)||0);
 
@@ -506,21 +517,24 @@ function umiejetnoscHandler(wspname, skillname, info) {
         // Build penalty string
         if( final_test_penalty != 0) {
             if( modi_wound_penalty && wound_penalty_value != 0 ) {
-                penalty_string += `Rany:${wound_penalty_value}% `
+                penalty_string += `Rany:${wound_penalty_value}% `;
             }
             if( modi_armor_penalty && armor_penalty_value != 0 ) {
-                penalty_string += `Pancerz:${armor_penalty_value}% `
+                penalty_string += `Pancerz:${armor_penalty_value}% `;
             }
             if( modi_encumberace_penalty && encumberance_penalty_value != 0 ) {
-                penalty_string += `Obciążenie:${encumberance_penalty_value}% `
+                penalty_string += `Obciążenie:${encumberance_penalty_value}% `;
             }
             if( modi_distance_penalty && distance_penalty_value != 0 ) {
-                penalty_string += `Dystans:${distance_penalty_value}% `
+                penalty_string += `Dystans:${distance_penalty_value}% `;
+            }
+            if( modi_inaccuracy_penalty && inaccuracy_penalty_value != 0 ) {
+                penalty_string += `${(inaccuracy_penalty_value > 0 ? "Niecelność":"Celność")}:${inaccuracy_penalty_value}% `;
             }
             if( modi_custom_penalty && custom_penalty_value != 0 ) {
-                penalty_string += `${(custom_penalty_value > 0 ? "Utrudnienie":"Ułatwienie")}:${custom_penalty_value}% `
+                penalty_string += `${(custom_penalty_value > 0 ? "Utrudnienie":"Ułatwienie")}:${custom_penalty_value}% `;
             }
-            penalty_sum_string = `Suma kar:${final_test_penalty}% `
+            penalty_sum_string = `Suma kar:${final_test_penalty}% `;
         }
 
         // Determine and describe roll mode
@@ -585,56 +599,78 @@ function umiejetnoscHandler(wspname, skillname, info) {
             rstr += `{{roll${i+1}=[[1d20]]}} `;
         }
         rstr += `{{base_wsp_name=${wsp_name}}} {{wsp_val=${statbase}}} {{skill-name=${skillstring}}} {{skillval=${skillvalue}}} `
-        rstr += `{{initialdifficulty=${levelLabel}}} {{modi-open=[[${modi_open}]]}}  {{penalties_str=${penalty_string}}} {{penalties_sum_str=${penalty_sum_string}}}`;
+        rstr += `{{initialdifficulty=${levelLabel}}} {{modi-open=[[${modi_open}]]}} {{penalties_sum_str=${penalty_sum_string}}} {{penalties_str=${penalty_string}}}`;
         
         
         switch(rollMode){    
             case ROLL_MODE_COMBAT_RANGED_SINGLE:
-                rstr += ` {{dice_count=[[${dice_count}]]}} {{weapon_name=${selected_hand_name}}}`;
-                log(`Roll string: ${rstr}`);
-                startRoll(rstr, (results) => {
-                    let x = 0;
-                    let vals = [];
-                    for(x=0; x<dice_count; ++x) {
-                        vals.push(results.results[`roll${x+1}`].result);
-                    }
-                    
-                    let dice_style = Array(dice_count).fill(4);
-                    let vals_s = vals.concat().sort( function(a, b){return a-b} );
-                    let success_count = 0;
-                    for (x=0; x<dice_count; ++x) {
-                        if(vals_s[x] <= default_test_value) {
-                            success_count += 1;
-                            dice_style[x] = 0;
-                        } else {
-                            if ( vals_s[x] - skill <= default_test_value && default_test_value > 0 ) {
+                // Get additional params relevant for combat derived from 1st order params
+                let selected_hand_misfire = selected_hand_id.replace("_line", "_misfire");
+                getAttrs([selected_hand_misfire], (values_combat) => {
+                    let misfireWeapon = (parseInt(values_combat[selected_hand_misfire])||0);
+                    rstr += ` {{rollz=[[1d20]]}} {{dice_count=[[${dice_count}]]}} {{weapon_name=${selected_hand_name}}} {{misfire_value=${misfireWeapon}}} {{penalties_str=${penalty_string}}}`;
+                    log(`Roll string: ${rstr}`);
+                    startRoll(rstr, (results) => {
+                        let x = 0;
+                        let vals = [];
+                        let misfireRoll = results.results.rollz.result;
+                        
+
+                        for(x=0; x<dice_count; ++x) {
+                            vals.push(results.results[`roll${x+1}`].result);
+                        }
+                        
+                        let dice_style = Array(dice_count).fill(4);
+                        let vals_s = vals.concat().sort( function(a, b){return a-b} );
+                        let success_count = 0;
+                        for (x=0; x<dice_count; ++x) {
+                            if(vals_s[x] <= default_test_value) {
                                 success_count += 1;
-                                dice_style[x] = 1;
+                                dice_style[x] = 0;
                             } else {
-                                dice_style[x] = 2;
+                                if ( vals_s[x] - skill <= default_test_value && default_test_value > 0 ) {
+                                    success_count += 1;
+                                    dice_style[x] = 1;
+                                } else {
+                                    dice_style[x] = 2;
+                                }
                             }
                         }
-                    }
-                    let dice_unsort = Array(dice_count).fill(4);
-                    for(x=0; x<dice_count; ++x) {
-                        for(let y=0; y<dice_count; ++y) {
-                            if(vals[x]==vals_s[y]) {
-                                dice_unsort[x] = dice_style[y];
-                                vals_s[y] = -1;
-                                break;
+                        let dice_unsort = Array(dice_count).fill(4);
+                        for(x=0; x<dice_count; ++x) {
+                            for(let y=0; y<dice_count; ++y) {
+                                if(vals[x]==vals_s[y]) {
+                                    dice_unsort[x] = dice_style[y];
+                                    vals_s[y] = -1;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    let rollResult = {
-                        successes : success_count,
-                    };
-                    for(x=0; x<dice_count; ++x) {
-                        rollResult[`roll${x+1}`] = dice_unsort[x];
-                        log(`Roll ${x+1} = ${dice_unsort[x]}`)
-                        log(`Roll val${x}:${vals[x]}`);
-                    }
-                    
-                    finishRoll(results.rollId, rollResult);    
+                        let rollResult = {
+                            successes : success_count,
+                        };
+                        for(x=0; x<dice_count; ++x) {
+                            rollResult[`roll${x+1}`] = dice_unsort[x];
+                            log(`Roll ${x+1} = ${dice_unsort[x]}`)
+                            log(`Roll val${x}:${vals[x]}`);
+                        }
+                        
+                         // Misfire logic - can make the entire test fail
+                         if( misfireWeapon != 0 ) {
+                            if( misfireRoll >= misfireWeapon) {
+                                rollResult["rollz"] = 2;
+                                for(x=0; x<dice_count; ++x) {
+                                    rollResult[`roll${x+1}`] = 4;
+                                }
+                            } else {
+                                rollResult["rollz"] = 0;
+                            }
+                        } else {
+                            rollResult["rollz"] = 4;
+                        }
+                        
+                        finishRoll(results.rollId, rollResult);    
+                    });
                 });
                 break;
 
@@ -1119,7 +1155,8 @@ function setWeaponSkillsSheet(hand) {
         "modi_distance_penalty":0,
         "distance_penalty":0,
         "selected_weapon_ranged_fire_button":-1,
-        "weapon_attack_range":0
+        "weapon_attack_range":0,
+        "inaccuracy_penalty":0,
     };
     getAttrs([handField, "inv_hand_left_id", "inv_hand_right_id"], (v1) => {
         if( hand != HAND_NONE ) {
@@ -1130,7 +1167,9 @@ function setWeaponSkillsSheet(hand) {
                 case WEAPON_TYPE_RANGED:
                     dictionary["weaponskillssheetTab"] = WEAPON_TYPE_RANGED;
                     let selectedWeaponFireModeField = selectedWeaponID.replace("_line", "_modes");
-                    getAttrs([selectedWeaponFireModeField], (v2) => {
+                    let selectedWeaponAccuracyBonus = selectedWeaponID.replace("_line", "_bonus_accuracy");
+                    getAttrs([selectedWeaponFireModeField, selectedWeaponAccuracyBonus], (v2) => {
+                        let bonus_accuracy = (parseInt(v2[selectedWeaponAccuracyBonus])||0);
                         let mode = "";
                         let burst = "";
                         switch(Number.parseInt(v2[selectedWeaponFireModeField])) {
@@ -1161,14 +1200,20 @@ function setWeaponSkillsSheet(hand) {
                         }
                         dictionary["selected_weapon_ranged_fire_mode"] = mode;
                         dictionary["selected_weapon_ranged_fire_mode_burst"] = burst;
+                        // Invert sign to convert weapon accuracy bonus into (potentially negative) inaccuracy "penalty"
+                        dictionary["inaccuracy_penalty"] = -bonus_accuracy;
+                        setAttrs(dictionary);
                     });
-                    break;
+                    return;
+
                 case WEAPON_TYPE_MELEE:
                     dictionary["weaponskillssheetTab"] = WEAPON_TYPE_MELEE;
-                    break;
+                    setAttrs(dictionary);
+                    return;
             }
             
         }
+        // No hand case
         setAttrs(dictionary);
     });
     
