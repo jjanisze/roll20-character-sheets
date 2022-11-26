@@ -19,6 +19,12 @@ Static XP Table for Wspolczynnik and Umiejetnosc
 Dark style fix visibility
 Selecting a specialization automatically marks that specializations skill groups
 
+## V 1.3
+Add melee weapons to inventory section
+Add ranged weapons to inventory section
+Add single shot rolls
+
+
 ## TODO
 TODO: Move images to github
 TODO: Design and build inventory section
@@ -29,6 +35,7 @@ TODO: Rzut na 1 kosc, 2 kosci
 TODO: wiedza ogolna hide toggle
 TODO: Different graphics for combat and mechanic rolls
 TODO: Add some way to drasniecie/rana
+TODO: Detect wounds: Zachowanie przytomności - gdy postać otrzymuje Ciężka ranę lub więcej niż 3 rany lekkie podczas jednej tury, a także gdy otrzymuje minimum lekką ranę w głowę, musi sprawdzić czy nie straciła przytomności, musi zdać Problematyczny test Budowy. Aby zachować przytomność po ptrzymaniu rany Krytycznej, musi zdać Cholernie trudny test Budowy.
 
 
 ## WONTDO

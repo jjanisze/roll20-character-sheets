@@ -1153,7 +1153,7 @@ function setWeaponSkillsSheet(hand) {
         "selected_weapon_ID":"",
         "modi_battle":0,
         "modi_distance_penalty":0,
-        "distance_penalty":0,
+        "weapon_attack_penalty":0,
         "selected_weapon_ranged_fire_button":-1,
         "weapon_attack_range":0,
         "inaccuracy_penalty":0,
