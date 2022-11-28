@@ -1,0 +1,40 @@
+mixin rollcolorsdiv(roll_count)
+    - var n = 0;
+     while n < roll_count
+        - var roll_name = "roll"+(n+1);
+        | {{#rollGreater() dice_count #{n}}}
+        | <div style="background-color:{{#rollTotal() computed::#{roll_name} 0}}#B3FF99{{/rollTotal() computed::#{roll_name} 0}}{{#rollTotal() computed::#{roll_name} 1}}#FFE599{{/rollTotal() computed::#{roll_name} 1}}{{#rollTotal() computed::#{roll_name} 2}}#FF9999{{/rollTotal() computed::#{roll_name} 2}}{{#rollTotal() computed::#{roll_name} 3}}rgb(0, 0, 0){{/rollTotal() computed::#{roll_name} 3}};">
+        h4 D#{n+1} = {{#{roll_name}}}
+        </div>
+        | {{/rollGreater() dice_count #{n++}}}
+
+rolltemplate(class='sheet-rolltemplate-non-combat')
+    div(class='sheet-template-container')
+        div(class='sheet-results')
+            h1 {{initialdifficulty}} test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})
+            h4 {{penalties_str}}
+            h3 {{penalties_sum_str}}
+            +rollcolorsdiv(3)
+            h3 Poziom ostateczny: {{computed::finaldifficultylabel}}
+            h2
+                | {{#rollTotal() modi-open 0}}
+                |   Sukcesy: {{computed::successes}}
+                | {{/rollTotal() modi-open 0}}
+                | {{#rollTotal() modi-open 1}}
+                |   Punktów przewagi: {{computed::successes}}
+                | {{/rollTotal() modi-open 1}}
+
+rolltemplate(class='sheet-rolltemplate-message')
+    div(class='sheet-template-container')
+        h1 {{message}}
+
+rolltemplate(class='sheet-rolltemplate-combat-ranged-single')
+    div(class='sheet-template-container')
+        h1 {{initialdifficulty}} test {{skill-name}} {{skillval}} używając {{weapon_name}} na {{base_wsp_name}} ({{wsp_val}})
+        h4 {{penalties_str}}
+        h3 {{penalties_sum_str}}
+        | <div style="{{#rollTotal() computed::rollz 0}}background-color:rgba(0, 255, 0, 0.3);{{/rollTotal() computed::rollz 0}}{{#rollTotal() computed::rollz 2}}background-color:rgba(255, 68, 0, 0.6);{{/rollTotal() computed::rollz 2}}{{#rollTotal() computed::rollz 4}}visibility:hidden;{{/rollTotal() computed::rollz 4}}">
+        h4 Zacięcie = {{rollz}} / {{misfire_value}}
+        +rollcolorsdiv(3)
+        | {{#rollTotal() computed::rollz 2}}<h1 style="color: red;">Klik!</h1>{{/rollTotal() computed::rollz 2}}
+

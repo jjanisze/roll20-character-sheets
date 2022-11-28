@@ -599,7 +599,7 @@ function umiejetnoscHandler(wspname, skillname, info) {
             rstr += `{{roll${i+1}=[[1d20]]}} `;
         }
         rstr += `{{base_wsp_name=${wsp_name}}} {{wsp_val=${statbase}}} {{skill-name=${skillstring}}} {{skillval=${skillvalue}}} `
-        rstr += `{{initialdifficulty=${levelLabel}}} {{modi-open=[[${modi_open}]]}} {{penalties_sum_str=${penalty_sum_string}}} {{penalties_str=${penalty_string}}}`;
+        rstr += `{{initialdifficulty=${levelLabel}}} {{modi-open=[[${modi_open}]]}} {{penalties_sum_str=${penalty_sum_string}}} {{penalties_str=${penalty_string}}} {{dice_count=[[${dice_count}]]}}`;
         
         
         switch(rollMode){    
@@ -608,7 +608,7 @@ function umiejetnoscHandler(wspname, skillname, info) {
                 let selected_hand_misfire = selected_hand_id.replace("_line", "_misfire");
                 getAttrs([selected_hand_misfire], (values_combat) => {
                     let misfireWeapon = (parseInt(values_combat[selected_hand_misfire])||0);
-                    rstr += ` {{rollz=[[1d20]]}} {{dice_count=[[${dice_count}]]}} {{weapon_name=${selected_hand_name}}} {{misfire_value=${misfireWeapon}}} {{penalties_str=${penalty_string}}}`;
+                    rstr += ` {{rollz=[[1d20]]}} {{weapon_name=${selected_hand_name}}} {{misfire_value=${misfireWeapon}}} {{penalties_str=${penalty_string}}}`;
                     log(`Roll string: ${rstr}`);
                     startRoll(rstr, (results) => {
                         let x = 0;

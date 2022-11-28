@@ -2335,7 +2335,7 @@ function umiejetnoscHandler(wspname, skillname, info) {
             rstr += `{{roll${i+1}=[[1d20]]}} `;
         }
         rstr += `{{base_wsp_name=${wsp_name}}} {{wsp_val=${statbase}}} {{skill-name=${skillstring}}} {{skillval=${skillvalue}}} `
-        rstr += `{{initialdifficulty=${levelLabel}}} {{modi-open=[[${modi_open}]]}} {{penalties_sum_str=${penalty_sum_string}}} {{penalties_str=${penalty_string}}}`;
+        rstr += `{{initialdifficulty=${levelLabel}}} {{modi-open=[[${modi_open}]]}} {{penalties_sum_str=${penalty_sum_string}}} {{penalties_str=${penalty_string}}} {{dice_count=[[${dice_count}]]}}`;
         
         
         switch(rollMode){    
@@ -2344,7 +2344,7 @@ function umiejetnoscHandler(wspname, skillname, info) {
                 let selected_hand_misfire = selected_hand_id.replace("_line", "_misfire");
                 getAttrs([selected_hand_misfire], (values_combat) => {
                     let misfireWeapon = (parseInt(values_combat[selected_hand_misfire])||0);
-                    rstr += ` {{rollz=[[1d20]]}} {{dice_count=[[${dice_count}]]}} {{weapon_name=${selected_hand_name}}} {{misfire_value=${misfireWeapon}}} {{penalties_str=${penalty_string}}}`;
+                    rstr += ` {{rollz=[[1d20]]}} {{weapon_name=${selected_hand_name}}} {{misfire_value=${misfireWeapon}}} {{penalties_str=${penalty_string}}}`;
                     log(`Roll string: ${rstr}`);
                     startRoll(rstr, (results) => {
                         let x = 0;
@@ -3014,98 +3014,15 @@ af_btnlist.forEach((afi) => {
 
 /*************************** EKWIPUNEK ****************************/
 /******************************************************************/
-</script><rolltemplate class="sheet-rolltemplate-non-combat">
-    <div class="sheet-template-container">
-        <div class="sheet-results">
-            <h1> 
-                {{initialdifficulty}} test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})
-            </h1>
-            <h4>{{penalties_str}}</h4>
-            <h3>{{penalties_sum_str}}</h3>
-            
-            
-            {{#rollTotal() computed::roll1 0}}<div style="background-color:#B3FF99;">{{/rollTotal() computed::roll1 0}}
-            {{#rollTotal() computed::roll1 1}}<div style="background-color:#FFE599;">{{/rollTotal() computed::roll1 1}}
-            {{#rollTotal() computed::roll1 2}}<div style="background-color:#FF9999;">{{/rollTotal() computed::roll1 2}}
-            {{#rollTotal() computed::roll1 3}}<div style="background-color: rgb(0, 0, 0);">{{/rollTotal() computed::roll1 3}}
-                <h4>D1 = {{roll1}}</h4>
-            </div>
-
-            
-            {{#rollTotal() computed::roll2 0}}<div style="background-color:#B3FF99;">{{/rollTotal() computed::roll2 0}}
-            {{#rollTotal() computed::roll2 1}}<div style="background-color:#FFE599;">{{/rollTotal() computed::roll2 1}}
-            {{#rollTotal() computed::roll2 2}}<div style="background-color:#FF9999;">{{/rollTotal() computed::roll2 2}}
-            {{#rollTotal() computed::roll2 3}}<div style="background-color: rgb(0, 0, 0);">{{/rollTotal() computed::roll2 3}}
-                <h4>D2 = {{roll2}}</h4>
-            </div>
-
-            
-            {{#rollTotal() computed::roll3 0}}<div style="background-color:#B3FF99;">{{/rollTotal() computed::roll3 0}}
-            {{#rollTotal() computed::roll3 1}}<div style="background-color:#FFE599;">{{/rollTotal() computed::roll3 1}}
-            {{#rollTotal() computed::roll3 2}}<div style="background-color:#FF9999;">{{/rollTotal() computed::roll3 2}}
-            {{#rollTotal() computed::roll3 3}}<div style="background-color: rgb(0, 0, 0);">{{/rollTotal() computed::roll3 3}}
-                <h4>D3 = {{roll3}}</h4>
-            </div>
-            <h3>Poziom ostateczny: {{computed::finaldifficultylabel}}</h3>
-            <h2>
-                {{#rollTotal() modi-open 0}}
-                Sukcesy: {{computed::successes}}
-                {{/rollTotal() modi-open 0}}
-                {{#rollTotal() modi-open 1}}
-                Punktów przewagi: {{computed::successes}}
-                {{/rollTotal() modi-open 1}}
-            </h2>
-        </div>
-    </div>
-</rolltemplate>
-
-<rolltemplate class="sheet-rolltemplate-message">
-    <div class="sheet-template-container">
-        <h1>{{message}}</h1>
-    </div>
-</rolltemplate>
-
-<rolltemplate class="sheet-rolltemplate-combat-ranged-single">
-    <div class="sheet-template-container">
-        <h1> 
-            {{initialdifficulty}} test {{skill-name}} {{skillval}} używając {{weapon_name}} na {{base_wsp_name}} ({{wsp_val}})
-        </h1>
-        <h4>{{penalties_str}}</h4>
-        <h3>{{penalties_sum_str}}</h3>
-        
-        {{#rollTotal() computed::rollz 0}}<div style="background-color:rgba(0, 255, 0, 0.3);">{{/rollTotal() computed::rollz 0}}
-        {{#rollTotal() computed::rollz 2}}<div style="background-color:rgba(255, 68, 0, 0.6);">{{/rollTotal() computed::rollz 2}}
-        {{#rollTotal() computed::rollz 4}}<div style="visibility:hidden;">{{/rollTotal() computed::rollz 4}}
-            <h4>Zacięcie = {{rollz}} / {{misfire_value}}</h4>
-        </div>
-
-
-        {{#rollTotal() computed::roll1 0}}<div style="background-color:rgba(0, 255, 0, 0.3);">{{/rollTotal() computed::roll1 0}}
-        {{#rollTotal() computed::roll1 1}}<div style="background-color:rgba(100, 30, 220, 0.4);">{{/rollTotal() computed::roll1 1}}
-        {{#rollTotal() computed::roll1 2}}<div style="background-color:rgba(255, 68, 0, 0.6);">{{/rollTotal() computed::roll1 2}}
-        {{#rollTotal() computed::roll1 3}}<div style="background-color: rgba(0, 0, 0, 0.4);">{{/rollTotal() computed::roll1 3}}
-        {{#rollTotal() computed::roll1 4}}<div style="visibility:hidden;">{{/rollTotal() computed::roll1 4}}
-            <h4>D1 = {{roll1}}</h4>
-        </div>
-        
-        {{#rollGreater() dice_count 1}}
-            {{#rollTotal() computed::roll2 0}}<div style="background-color:rgba(0, 255, 0, 0.3);">{{/rollTotal() computed::roll2 0}}
-            {{#rollTotal() computed::roll2 1}}<div style="background-color:rgba(100, 30, 220, 0.4);">{{/rollTotal() computed::roll2 1}}
-            {{#rollTotal() computed::roll2 2}}<div style="background-color:rgba(255, 68, 0, 0.6);">{{/rollTotal() computed::roll2 2}}
-            {{#rollTotal() computed::roll2 3}}<div style="background-color: rgba(0, 0, 0, 0.4);">{{/rollTotal() computed::roll2 3}}
-            {{#rollTotal() computed::roll2 4}}<div style="visibility:hidden;">{{/rollTotal() computed::roll2 4}}
-                <h4>D2 = {{roll2}}</h4>
-            </div>
-        {{/rollGreater() dice_count 1}}
-        {{#rollGreater() dice_count 2}}
-            {{#rollTotal() computed::roll3 0}}<div style="background-color:rgba(0, 255, 0, 0.3);">{{/rollTotal() computed::roll3 0}}
-            {{#rollTotal() computed::roll3 1}}<div style="background-color:rgba(100, 30, 220, 0.4);">{{/rollTotal() computed::roll3 1}}
-            {{#rollTotal() computed::roll3 2}}<div style="background-color:rgba(255, 68, 0, 0.6);">{{/rollTotal() computed::roll3 2}}
-            {{#rollTotal() computed::roll3 3}}<div style="background-color: rgba(0, 0, 0, 0.4);">{{/rollTotal() computed::roll3 3}}
-            {{#rollTotal() computed::roll3 4}}<div style="visibility:hidden;">{{/rollTotal() computed::roll3 4}}
-                <h4>D3 = {{roll3}}</h4>
-            </div>
-        {{/rollGreater() dice_count 2}}
-        {{#rollTotal() computed::rollz 2}}<h1 style="color: red;">Klik!</h1>{{/rollTotal() computed::rollz 2}}
-    </div>
-</rolltemplate>
+</script><rolltemplate class="sheet-rolltemplate-non-combat"><div class="sheet-template-container"><div class="sheet-results"><h1>{{initialdifficulty}} test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})</h1><h4>{{penalties_str}}</h4><h3>{{penalties_sum_str}}</h3>{{#rollGreater() dice_count 0}}
+<div style="background-color:{{#rollTotal() computed::roll1 0}}#B3FF99{{/rollTotal() computed::roll1 0}}{{#rollTotal() computed::roll1 1}}#FFE599{{/rollTotal() computed::roll1 1}}{{#rollTotal() computed::roll1 2}}#FF9999{{/rollTotal() computed::roll1 2}}{{#rollTotal() computed::roll1 3}}rgb(0, 0, 0){{/rollTotal() computed::roll1 3}};"><h4>D1 = {{roll1}}</h4></div>{{/rollGreater() dice_count 0}}{{#rollGreater() dice_count 1}}
+<div style="background-color:{{#rollTotal() computed::roll2 0}}#B3FF99{{/rollTotal() computed::roll2 0}}{{#rollTotal() computed::roll2 1}}#FFE599{{/rollTotal() computed::roll2 1}}{{#rollTotal() computed::roll2 2}}#FF9999{{/rollTotal() computed::roll2 2}}{{#rollTotal() computed::roll2 3}}rgb(0, 0, 0){{/rollTotal() computed::roll2 3}};"><h4>D2 = {{roll2}}</h4></div>{{/rollGreater() dice_count 1}}{{#rollGreater() dice_count 2}}
+<div style="background-color:{{#rollTotal() computed::roll3 0}}#B3FF99{{/rollTotal() computed::roll3 0}}{{#rollTotal() computed::roll3 1}}#FFE599{{/rollTotal() computed::roll3 1}}{{#rollTotal() computed::roll3 2}}#FF9999{{/rollTotal() computed::roll3 2}}{{#rollTotal() computed::roll3 3}}rgb(0, 0, 0){{/rollTotal() computed::roll3 3}};"><h4>D3 = {{roll3}}</h4></div>{{/rollGreater() dice_count 2}}<h3>Poziom ostateczny: {{computed::finaldifficultylabel}}</h3><h2>{{#rollTotal() modi-open 0}}
+  Sukcesy: {{computed::successes}}
+{{/rollTotal() modi-open 0}}
+{{#rollTotal() modi-open 1}}
+  Punktów przewagi: {{computed::successes}}
+{{/rollTotal() modi-open 1}}</h2></div></div></rolltemplate><rolltemplate class="sheet-rolltemplate-message"><div class="sheet-template-container"><h1>{{message}}</h1></div></rolltemplate><rolltemplate class="sheet-rolltemplate-combat-ranged-single"><div class="sheet-template-container"><h1>{{initialdifficulty}} test {{skill-name}} {{skillval}} używając {{weapon_name}} na {{base_wsp_name}} ({{wsp_val}})</h1><h4>{{penalties_str}}</h4><h3>{{penalties_sum_str}}</h3><div style="{{#rollTotal() computed::rollz 0}}background-color:rgba(0, 255, 0, 0.3);{{/rollTotal() computed::rollz 0}}{{#rollTotal() computed::rollz 2}}background-color:rgba(255, 68, 0, 0.6);{{/rollTotal() computed::rollz 2}}{{#rollTotal() computed::rollz 4}}visibility:hidden;{{/rollTotal() computed::rollz 4}}"><h4>Zacięcie = {{rollz}} / {{misfire_value}}</h4>{{#rollGreater() dice_count 0}}
+<div style="background-color:{{#rollTotal() computed::roll1 0}}#B3FF99{{/rollTotal() computed::roll1 0}}{{#rollTotal() computed::roll1 1}}#FFE599{{/rollTotal() computed::roll1 1}}{{#rollTotal() computed::roll1 2}}#FF9999{{/rollTotal() computed::roll1 2}}{{#rollTotal() computed::roll1 3}}rgb(0, 0, 0){{/rollTotal() computed::roll1 3}};"><h4>D1 = {{roll1}}</h4></div>{{/rollGreater() dice_count 0}}{{#rollGreater() dice_count 1}}
+<div style="background-color:{{#rollTotal() computed::roll2 0}}#B3FF99{{/rollTotal() computed::roll2 0}}{{#rollTotal() computed::roll2 1}}#FFE599{{/rollTotal() computed::roll2 1}}{{#rollTotal() computed::roll2 2}}#FF9999{{/rollTotal() computed::roll2 2}}{{#rollTotal() computed::roll2 3}}rgb(0, 0, 0){{/rollTotal() computed::roll2 3}};"><h4>D2 = {{roll2}}</h4></div>{{/rollGreater() dice_count 1}}{{#rollGreater() dice_count 2}}
+<div style="background-color:{{#rollTotal() computed::roll3 0}}#B3FF99{{/rollTotal() computed::roll3 0}}{{#rollTotal() computed::roll3 1}}#FFE599{{/rollTotal() computed::roll3 1}}{{#rollTotal() computed::roll3 2}}#FF9999{{/rollTotal() computed::roll3 2}}{{#rollTotal() computed::roll3 3}}rgb(0, 0, 0){{/rollTotal() computed::roll3 3}};"><h4>D3 = {{roll3}}</h4></div>{{/rollGreater() dice_count 2}}{{#rollTotal() computed::rollz 2}}<h1 style="color: red;">Klik!</h1>{{/rollTotal() computed::rollz 2}}</div></rolltemplate>
