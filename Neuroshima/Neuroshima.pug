@@ -1,3 +1,18 @@
+// Example: CONFIG.pug:
+// Example: -   const REPO_PATH = "https://github.com/jjanisze/roll20-character-sheets/blob/"
+// Example: -   const BRANCH_PATH = "neuroshima_inventory_v2/"
+// Example: -   const IMAGES_PATH = "Neuroshima/Images/"
+include CONFIG.pug
+
+- var gsrc = function gsrc(path) {
+-   return REPO_PATH + BRANCH_PATH + IMAGES_PATH + path + "?raw=true";
+- }
+  
+
+mixin gimg(path)
+  - var isrc = gsrc(path);
+  img(src=isrc)&attributes(attributes)
+
 input(type="hidden" class="sheet-version" name="attr_version"  value="1.1")
 img(src="https://i.imgur.com/9rilIHq.png")
 div(class="sheet-full-page")
