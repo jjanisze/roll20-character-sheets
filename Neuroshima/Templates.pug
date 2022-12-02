@@ -45,41 +45,53 @@ rolltemplate(class='sheet-rolltemplate-combat-ranged-single')
 |
 |
 |
-mixin locationimg(min, max, imgsrc)
+mixin between_gimg(min, max, imgsrc, dicename="location")
+    if min == max
+        | {{#rollTotal() #{dicename} #{min}}}
+        |
+        + gimg(imgsrc)
+        |
+        | {{/rollTotal() #{dicename} #{min}}}
+    else
+        | {{#rollBetween() #{dicename} #{min} #{max}}}
+        |
+        + gimg(imgsrc)
+        |
+        | {{/rollBetween() #{dicename} #{min} #{max}}}
+
+mixin between_text(min,max,str, dicename="location")
     |
-    | {{#rollBetween() location #{min} #{max}}}
-    |
-    + gimg(imgsrc)
-    |
-    | {{/rollBetween() location #{min} #{max}}}
-mixin locationtitle(min,max,str)
-    |
-    | {{#rollBetween() location #{min} #{max}}}
-    |
-    | #{str}
-    |
-    | {{/rollBetween() location #{min} #{max}}}
+    if min == max
+        | {{#rollTotal() #{dicename} #{min}}}
+        | #{str}
+        | {{/rollTotal() #{dicename} #{min}}}
+    else
+        | {{#rollBetween() #{dicename} #{min} #{max}}}
+        | #{str}
+        | {{/rollBetween() #{dicename} #{min} #{max}}}
 
 rolltemplate(class='sheet-rolltemplate-hit-location')
     div(class='sheet-template-container')
-        +locationimg(1,2, "HitLocation/HEAD.png")
-        +locationimg(3,4, "HitLocation/RARM.png")
-        +locationimg(5,6, "HitLocation/LARM.png")
-        +locationimg(7,15, "HitLocation/TORS.png")
-        +locationimg(16,7, "HitLocation/RLEG.png")
-        +locationimg(18,19, "HitLocation/LLEG.png")
-        |
-        | {{#rollTotal() location 20}}
-        |
-        + gimg("JOKER20.png")
-        |
-        | {{/rollTotal() location 20}}
-        |
+        +between_gimg(1,2, "HitLocation/HEAD.png")
+        +between_gimg(3,4, "HitLocation/RARM.png")
+        +between_gimg(5,6, "HitLocation/LARM.png")
+        +between_gimg(7,15, "HitLocation/TORS.png")
+        +between_gimg(16,17, "HitLocation/RLEG.png")
+        +between_gimg(18,19, "HitLocation/LLEG.png")
+        +between_gimg(20,20, "JOKER20.png")
         h4 Na lokację = {{location}}
         h2
-            +locationtitle(1,2, "Głowa")
-            +locationtitle(3,4, "Prawa ręka")
-            +locationtitle(5,6, "Lewa ręka")
-            +locationtitle(7,15, "Tułów")
-            +locationtitle(16,7, "Prawa noga")
-            +locationtitle(18,19, "Lewa noga")
+            +between_text(1,2, "Głowa")
+            +between_text(3,4, "Prawa ręka")
+            +between_text(5,6, "Lewa ręka")
+            +between_text(7,15, "Tułów")
+            +between_text(16,7, "Prawa noga")
+            +between_text(18,19, "Lewa noga")
+
+rolltemplate(class='sheet-rolltemplate-misfire-type')
+    div(class='sheet-template-container')
+        + gimg("KLIK.png")
+        h4 Na stopień zacięcia = {{misfire}}
+        +between_text(1,10, "Zacięte - 1 tura", "misfire")
+        +between_text(11,18, "Zepsute - konserwacja", "misfire")
+        +between_text(19,20, "Zniszczone - rusznikarz", "misfire")

@@ -635,6 +635,13 @@ function umiejetnoscHandler(wspname, skillname, info) {
                                     dice_style[x] = 2;
                                 }
                             }
+                            if(modi_battle) {
+                                if(vals_s[x]==20 && dice_style[x] != 2) {
+                                    // Pechowa 20-tka
+                                    dice_style[x] = 2;
+                                    success_count -= 1;
+                                }
+                            }
                         }
                         let dice_unsort = Array(dice_count).fill(4);
                         for(x=0; x<dice_count; ++x) {
@@ -736,6 +743,13 @@ function umiejetnoscHandler(wspname, skillname, info) {
                                     dice_style[x] = 1;
                                 } else {
                                     dice_style[x] = 2;
+                                }
+                                if(modi_battle) {
+                                    if(vals_s[x]==20 && dice_style[x] != 2) {
+                                        // Pechowa 20-tka
+                                        dice_style[x] = 2;
+                                        success_count -= 1;
+                                    }
                                 }
                             }
                         }    

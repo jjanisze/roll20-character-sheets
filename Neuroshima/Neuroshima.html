@@ -652,6 +652,7 @@
             <div class="param-row">
                 <p>&nbsp;</p>
                 <button type="roll" name="act_weapon_hit_location" value="&{template:hit-location} {{location=[[1d20]]}}">Lokacja</button>
+                <button type="roll" name="act_weapon_misfire_type" value="&{template:misfire-type} {{misfire=[[1d20]]}}">Typ Zacięcia</button>
                 <p>&nbsp;</p>
             </div>
         </div>
@@ -2371,6 +2372,13 @@ function umiejetnoscHandler(wspname, skillname, info) {
                                     dice_style[x] = 2;
                                 }
                             }
+                            if(modi_battle) {
+                                if(vals_s[x]==20 && dice_style[x] != 2) {
+                                    // Pechowa 20-tka
+                                    dice_style[x] = 2;
+                                    success_count -= 1;
+                                }
+                            }
                         }
                         let dice_unsort = Array(dice_count).fill(4);
                         for(x=0; x<dice_count; ++x) {
@@ -2472,6 +2480,13 @@ function umiejetnoscHandler(wspname, skillname, info) {
                                     dice_style[x] = 1;
                                 } else {
                                     dice_style[x] = 2;
+                                }
+                                if(modi_battle) {
+                                    if(vals_s[x]==20 && dice_style[x] != 2) {
+                                        // Pechowa 20-tka
+                                        dice_style[x] = 2;
+                                        success_count -= 1;
+                                    }
                                 }
                             }
                         }    
@@ -3029,56 +3044,36 @@ af_btnlist.forEach((afi) => {
 
 
 
-<rolltemplate class="sheet-rolltemplate-hit-location"><div class="sheet-template-container">
-{{#rollBetween() location 1 2}}
+<rolltemplate class="sheet-rolltemplate-hit-location"><div class="sheet-template-container">{{#rollBetween() location 1 2}}
 <img src="https://github.com/jjanisze/roll20-character-sheets/blob/neuroshima_inventory_v2/Neuroshima/Images/HitLocation/HEAD.png?raw=true"/>
-{{/rollBetween() location 1 2}}
-{{#rollBetween() location 3 4}}
+{{/rollBetween() location 1 2}}{{#rollBetween() location 3 4}}
 <img src="https://github.com/jjanisze/roll20-character-sheets/blob/neuroshima_inventory_v2/Neuroshima/Images/HitLocation/RARM.png?raw=true"/>
-{{/rollBetween() location 3 4}}
-{{#rollBetween() location 5 6}}
+{{/rollBetween() location 3 4}}{{#rollBetween() location 5 6}}
 <img src="https://github.com/jjanisze/roll20-character-sheets/blob/neuroshima_inventory_v2/Neuroshima/Images/HitLocation/LARM.png?raw=true"/>
-{{/rollBetween() location 5 6}}
-{{#rollBetween() location 7 15}}
+{{/rollBetween() location 5 6}}{{#rollBetween() location 7 15}}
 <img src="https://github.com/jjanisze/roll20-character-sheets/blob/neuroshima_inventory_v2/Neuroshima/Images/HitLocation/TORS.png?raw=true"/>
-{{/rollBetween() location 7 15}}
-{{#rollBetween() location 16 7}}
+{{/rollBetween() location 7 15}}{{#rollBetween() location 16 17}}
 <img src="https://github.com/jjanisze/roll20-character-sheets/blob/neuroshima_inventory_v2/Neuroshima/Images/HitLocation/RLEG.png?raw=true"/>
-{{/rollBetween() location 16 7}}
-{{#rollBetween() location 18 19}}
+{{/rollBetween() location 16 17}}{{#rollBetween() location 18 19}}
 <img src="https://github.com/jjanisze/roll20-character-sheets/blob/neuroshima_inventory_v2/Neuroshima/Images/HitLocation/LLEG.png?raw=true"/>
-{{/rollBetween() location 18 19}}
-{{#rollTotal() location 20}}
+{{/rollBetween() location 18 19}}{{#rollTotal() location 20}}
 <img src="https://github.com/jjanisze/roll20-character-sheets/blob/neuroshima_inventory_v2/Neuroshima/Images/JOKER20.png?raw=true"/>
-{{/rollTotal() location 20}}
-<h4>Na lokację = {{location}}</h4><h2>
-{{#rollBetween() location 1 2}}
-
+{{/rollTotal() location 20}}<h4>Na lokację = {{location}}</h4><h2>{{#rollBetween() location 1 2}}
 Głowa
-
-{{/rollBetween() location 1 2}}
-{{#rollBetween() location 3 4}}
-
+{{/rollBetween() location 1 2}}{{#rollBetween() location 3 4}}
 Prawa ręka
-
-{{/rollBetween() location 3 4}}
-{{#rollBetween() location 5 6}}
-
+{{/rollBetween() location 3 4}}{{#rollBetween() location 5 6}}
 Lewa ręka
-
-{{/rollBetween() location 5 6}}
-{{#rollBetween() location 7 15}}
-
+{{/rollBetween() location 5 6}}{{#rollBetween() location 7 15}}
 Tułów
-
-{{/rollBetween() location 7 15}}
-{{#rollBetween() location 16 7}}
-
+{{/rollBetween() location 7 15}}{{#rollBetween() location 16 7}}
 Prawa noga
-
-{{/rollBetween() location 16 7}}
-{{#rollBetween() location 18 19}}
-
+{{/rollBetween() location 16 7}}{{#rollBetween() location 18 19}}
 Lewa noga
-
-{{/rollBetween() location 18 19}}</h2></div></rolltemplate>
+{{/rollBetween() location 18 19}}</h2></div></rolltemplate><rolltemplate class="sheet-rolltemplate-misfire-type"><div class="sheet-template-container"><img src="https://github.com/jjanisze/roll20-character-sheets/blob/neuroshima_inventory_v2/Neuroshima/Images/KLIK.png?raw=true"/><h4>Na stopień zacięcia = {{misfire}}</h4>{{#rollBetween() misfire 1 10}}
+Zacięte - 1 tura
+{{/rollBetween() misfire 1 10}}{{#rollBetween() misfire 11 18}}
+Zepsute - konserwacja
+{{/rollBetween() misfire 11 18}}{{#rollBetween() misfire 19 20}}
+Zniszczone - rusznikarz
+{{/rollBetween() misfire 19 20}}</div></rolltemplate>
