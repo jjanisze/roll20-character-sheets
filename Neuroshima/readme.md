@@ -26,6 +26,7 @@ Add single shot rolls
 
 
 ## TODO
+TODO: Equipment line should be not combobox but radiobox
 TODO: Move images to github
 TODO: Design and build inventory section
 TODO: Add kara do wspolczynnika to ustawienia rzutu

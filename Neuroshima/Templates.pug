@@ -3,7 +3,7 @@ mixin rollcolorsdiv(roll_count)
      while n < roll_count
         - var roll_name = "roll"+(n+1);
         | {{#rollGreater() dice_count #{n}}}
-        | <div style="background-color:{{#rollTotal() computed::#{roll_name} 0}}#B3FF99{{/rollTotal() computed::#{roll_name} 0}}{{#rollTotal() computed::#{roll_name} 1}}#FFE599{{/rollTotal() computed::#{roll_name} 1}}{{#rollTotal() computed::#{roll_name} 2}}#FF9999{{/rollTotal() computed::#{roll_name} 2}}{{#rollTotal() computed::#{roll_name} 3}}rgb(0, 0, 0){{/rollTotal() computed::#{roll_name} 3}};">
+        | <div style="background-color:{{#rollTotal() computed::#{roll_name} 0}}#B3FF99{{/rollTotal() computed::#{roll_name} 0}}{{#rollTotal() computed::#{roll_name} 1}}#77c881{{/rollTotal() computed::#{roll_name} 1}}{{#rollTotal() computed::#{roll_name} 2}}#FF9999{{/rollTotal() computed::#{roll_name} 2}}{{#rollTotal() computed::#{roll_name} 3}}rgb(0, 0, 0){{/rollTotal() computed::#{roll_name} 3}};">
         h4 D#{n+1} = {{#{roll_name}}}
         </div>
         | {{/rollGreater() dice_count #{n++}}}
@@ -13,11 +13,11 @@ mixin rollcolorsdiv(roll_count)
 rolltemplate(class='sheet-rolltemplate-non-combat')
     div(class='sheet-template-container')
         div(class='sheet-results')
-            h1 {{initialdifficulty}} test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})
-            h4 {{penalties_str}}
+            h1 {{computed::finaldifficultylabel}} {{initialdifficulty}} test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})
+            h4(style="color:#9f0000;") {{penalties_str}}
             h3 {{penalties_sum_str}}
+            h2 Zdawany na {{computed::passingvalue}}
             +rollcolorsdiv(3)
-            h3 Poziom ostateczny: {{computed::finaldifficultylabel}}
             h2
                 | {{#rollTotal() modi-open 0}}
                 |   Sukcesy: {{computed::successes}}
@@ -93,5 +93,14 @@ rolltemplate(class='sheet-rolltemplate-misfire-type')
         + gimg("KLIK.png")
         h4 Na stopień zacięcia = {{misfire}}
         +between_text(1,10, "Zacięte - 1 tura", "misfire")
-        +between_text(11,18, "Zepsute - konserwacja", "misfire")
-        +between_text(19,20, "Zniszczone - rusznikarz", "misfire")
+        +between_text(11,18, "Niesprawne - konserwacja", "misfire")
+        +between_text(19,20, "Uszkodzone - rusznikarz", "misfire")
+
+rolltemplate(class='sheet-rolltemplate-melee-turn')
+    div(class='sheet-template-container')
+        h2 Używszy {{weapon_name}}
+        h1 {{initialdifficulty}} test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})
+        h4 {{penalties_str}}
+        h3 {{penalties_sum_str}}
+        | <div style="{{#rollTotal() computed::rollz 0}}background-color:rgba(0, 255, 0, 0.3);{{/rollTotal() computed::rollz 0}}{{#rollTotal() computed::rollz 2}}background-color:rgba(255, 68, 0, 0.6);{{/rollTotal() computed::rollz 2}}{{#rollTotal() computed::rollz 4}}visibility:hidden;{{/rollTotal() computed::rollz 4}}">
+        +rollcolorsdiv(3)

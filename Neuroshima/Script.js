@@ -237,6 +237,7 @@ const startingPercent = [-20, 0, 11, 31, 61, 91, 121, 201, 241];
 const lastPassingPercent = [-1,10,30,60,90,120,200, 240, 0xFFFFFF];
 const levelRadioValues = ["0","1","2","3","4","5","6","7","8"];
 const levelLabels = ["Łatwy", "Przeciętny", "Problematyczny", "Trudny", "Bardzo Trudny", "Cholernie Trudny", "Fart", "Mistrzowski", "Arcymistrzowski"];
+const levelLabelsGenitive = ["Łatwego", "Przeciętnego", "Problematycznego", "Trudnego", "Bardzo Trudnego", "Cholernie Trudnego", "Fartownego", "Mistrzowskiego", "Arcymistrzowskiego"];
   levelRadioValues.forEach(function(value) {
     on(`clicked:level_${value}`, function() {
       setAttrs({
@@ -262,6 +263,7 @@ on("change:level change:modi_battle change:modi_open change:modi_penalties chang
         let total_armor_penalties = (parseInt(values.total_armor_penalties)||0);
         
         let modi_battle = (parseInt(values.modi_battle)||0);
+        let modi_open = (parseInt(values.modi_open)||0);
         let modi_encumberace_penalties = (parseInt(values.modi_encumberace_penalties)||0);
         let encumberace_penalties = (parseInt(values.encumberace_penalties)||0);
         let modi_distance_penalty = (parseInt(values.modi_distance_penalty)||0);
@@ -291,21 +293,35 @@ on("change:level change:modi_battle change:modi_open change:modi_penalties chang
         }
         let final_test_level_label = levelLabels[final_test_level];
 
-        if( ! modi_battle ) {
-            // Lower weapon if holding one
-            setWeaponSkillsSheet(HAND_NONE);
-        } else {
-            if( selectedWeaponHand == HAND_NONE ) {
-                // Raise right hand weapon by default
-                setWeaponSkillsSheet(HAND_RIGHT);
-            }
-        }
-
-        setAttrs({                            
+        let dictionary = {
             "final_test_level": final_test_level,
             "final_test_penalty": final_test_penalty,
             "final_test_level_display": final_test_level_label
-        });
+        };
+
+        if( modi_battle && modi_open ) {
+            // Can't have an open combat test
+            // Break tie with whether a weapon is in hand
+            if( selectedWeaponHand != HAND_NONE ) {
+                // Assume prior mode was combat
+                dictionary["modi_battle"]   = 1;
+                dictionary["modi_open"]     = 0;
+            } else {
+                // Assume prior mode was non-combat
+                dictionary["modi_battle"]   = 0;
+                dictionary["modi_open"]     = 1;
+            }
+        }
+        if( modi_battle ) {
+            if( selectedWeaponHand == HAND_NONE ) {
+                // Use right hand weapon by default
+                setWeaponSkillsSheet(HAND_RIGHT);
+            }
+        } else {
+            // Lower weapon if holding one
+            setWeaponSkillsSheet(HAND_NONE);
+        }
+        setAttrs(dictionary);
     });
 });
 /************************** ROLL PARAMETERS ***********************/
@@ -593,13 +609,13 @@ function umiejetnoscHandler(wspname, skillname, info) {
             } 
         }
 
-        let rstr = `&{template:${rollMode}} {{successes=[[0[computed value]]]}} {{finaldifficultylabel=[[0[computed value]]]}}`;
+        let rstr = `&{template:${rollMode}} {{successes=[[0[computed value]]]}} {{finaldifficultylabel=[[0[computed value]]]}} {{passingvalue=[[0[computed value]]]}} `;
         // Create string with appropriate number of dice rolls
         for(let i = 0; i<dice_count; ++i) {
             rstr += `{{roll${i+1}=[[1d20]]}} `;
         }
         rstr += `{{base_wsp_name=${wsp_name}}} {{wsp_val=${statbase}}} {{skill-name=${skillstring}}} {{skillval=${skillvalue}}} `
-        rstr += `{{initialdifficulty=${levelLabel}}} {{modi-open=[[${modi_open}]]}} {{penalties_sum_str=${penalty_sum_string}}} {{penalties_str=${penalty_string}}} {{dice_count=[[${dice_count}]]}}`;
+        rstr += `{{modi-open=[[${modi_open}]]}} {{penalties_sum_str=${penalty_sum_string}}} {{penalties_str=${penalty_string}}} {{dice_count=[[${dice_count}]]}}`;
         
         
         switch(rollMode){    
@@ -715,7 +731,6 @@ function umiejetnoscHandler(wspname, skillname, info) {
                             while ( skill_remaining > 0 ) {
                                 if (vals_sc[0] == vals_sc[1]) {
                                     vals_sc[0] -= 1;
-                                    dice_style[0] = 1;
                                 } else {
                                     vals_sc[1] -= 1;
                                 }
@@ -770,7 +785,8 @@ function umiejetnoscHandler(wspname, skillname, info) {
                     // Clamp level
                     final_test_level = final_test_level > levelLabels.length ? levelLabels.length - 1 : final_test_level;
                     final_test_level = final_test_level < 0 ? 0 : final_test_level;
-                    let label = `${levelLabels[final_test_level]}(${statreq})`;
+                    let prev_difficulty = level_base == final_test_level ? "" : "(z "+levelLabelsGenitive[level_base]+")";
+                    let label = levelLabels[final_test_level]+prev_difficulty;
 
                     finishRoll(
                         results.rollId,
@@ -780,6 +796,7 @@ function umiejetnoscHandler(wspname, skillname, info) {
                             roll3: dice_unsort[2],
                             finaldifficultylabel: label,
                             successes : succ,
+                            passingvalue: statreq
                         }
                     );
                 });
