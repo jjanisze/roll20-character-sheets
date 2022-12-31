@@ -3,7 +3,7 @@ mixin rollcolorsdiv(roll_count)
      while n < roll_count
         - var roll_name = "roll"+(n+1);
         | {{#rollGreater() dice_count #{n}}}
-        | <div style="background-color:{{#rollTotal() computed::#{roll_name} 0}}#B3FF99{{/rollTotal() computed::#{roll_name} 0}}{{#rollTotal() computed::#{roll_name} 1}}#77c881{{/rollTotal() computed::#{roll_name} 1}}{{#rollTotal() computed::#{roll_name} 2}}#FF9999{{/rollTotal() computed::#{roll_name} 2}}{{#rollTotal() computed::#{roll_name} 3}}rgb(0, 0, 0){{/rollTotal() computed::#{roll_name} 3}};">
+        | <div style="background-color:{{#rollTotal() computed::#{roll_name} 0}}#B3FF99{{/rollTotal() computed::#{roll_name} 0}}{{#rollTotal() computed::#{roll_name} 1}}#77c881{{/rollTotal() computed::#{roll_name} 1}}{{#rollTotal() computed::#{roll_name} 2}}#FF9999{{/rollTotal() computed::#{roll_name} 2}}{{#rollTotal() computed::#{roll_name} 3}}#777777{{/rollTotal() computed::#{roll_name} 3}};">
         h4 D#{n+1} = {{#{roll_name}}}
         </div>
         | {{/rollGreater() dice_count #{n++}}}

@@ -521,13 +521,18 @@ function umiejetnoscHandler(wspname, skillname, info) {
                 selected_hand_name = String(values.inv_hand_left_name);
                 selected_hand_type = String(values.inv_hand_left_type);
                 selected_hand_id = String(values.inv_hand_left_id);
+                break;
+
             case HAND_RIGHT:
                 selected_hand_name = String(values.inv_hand_right_name);
                 selected_hand_type = String(values.inv_hand_right_type);
                 selected_hand_id = String(values.inv_hand_right_id);
                 break;
+
             default:
                 selected_hand = HAND_NONE;
+                selected_hand_type = WEAPON_TYPE_NONE;
+                selected_hand_id = "";
         }
 
         // Build penalty string
@@ -565,6 +570,7 @@ function umiejetnoscHandler(wspname, skillname, info) {
             }
         } else {
             skillstring = "bojowy "+skillstring
+            log(`Test hand ${selected_hand}, wp type ${selected_hand_type}`);
             switch(selected_hand) {
                 case HAND_LEFT:
                 case HAND_RIGHT:
@@ -1006,7 +1012,7 @@ function equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, type
             }
             setAttrs(dictionary); 
             if( actionString.length > 0 ) {
-                actionString += " a następnie ";
+                actionString += ". ";
             }
             if( secondActionString.length > 0) {
                 actionString += secondActionString;
@@ -1183,6 +1189,7 @@ function setWeaponSkillsSheet(hand) {
         "weaponskillssheetTab":WEAPON_TYPE_NONE,
         "selected_weapon_ID":"",
         "modi_battle":0,
+        "modi_inaccuracy_penalty":0,
         "modi_distance_penalty":0,
         "weapon_attack_penalty":0,
         "selected_weapon_ranged_fire_button":-1,
@@ -1197,6 +1204,8 @@ function setWeaponSkillsSheet(hand) {
             switch( v1[handField] ) {
                 case WEAPON_TYPE_RANGED:
                     dictionary["weaponskillssheetTab"] = WEAPON_TYPE_RANGED;
+                    dictionary["modi_inaccuracy_penalty"] = 1;
+                    dictionary["modi_distance_penalty"] = 1;
                     let selectedWeaponFireModeField = selectedWeaponID.replace("_line", "_modes");
                     let selectedWeaponAccuracyBonus = selectedWeaponID.replace("_line", "_bonus_accuracy");
                     getAttrs([selectedWeaponFireModeField, selectedWeaponAccuracyBonus], (v2) => {
@@ -1239,12 +1248,15 @@ function setWeaponSkillsSheet(hand) {
 
                 case WEAPON_TYPE_MELEE:
                     dictionary["weaponskillssheetTab"] = WEAPON_TYPE_MELEE;
-                    setAttrs(dictionary);
-                    return;
+                    break;
+
+                default:
+                    log(`Unexpected weapon type ${v1[handField]}`);
             }
-            
+        } else {
+            // No hand case
         }
-        // No hand case
+        // Sets for melee too
         setAttrs(dictionary);
     });
     
