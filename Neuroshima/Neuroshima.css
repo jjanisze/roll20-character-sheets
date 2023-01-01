@@ -968,10 +968,10 @@ table.wspolczynniki input[type=number].wsp-star-display {
 }
 .charsheet div.divTableCell, div.divTableHead {
 	display: table-cell;
-	padding: 0px 2px 0px 2px;
+	padding: 0px 2px 1px 2px;
 }
 .charsheet div.divTableHeading {
-	background-color: rgba(0, 0, 0, 0.3);
+	background-color: rgba(0, 0, 0, 0.15);
 	display: table-header-group;
 	font-weight: bold;
 }
@@ -988,7 +988,7 @@ table.wspolczynniki input[type=number].wsp-star-display {
 	font-family: 'Roboto Mono', monospace;
 	margin-bottom:-2px;
 	height:100%;
-	font-size:11px;
+	font-size:12px;
 	color: #000;
 }
 .charsheet div.divTable h4 {
@@ -996,7 +996,7 @@ table.wspolczynniki input[type=number].wsp-star-display {
 	margin-bottom:-2px;
 	height:100%;
 	font-size:14px;
-	color: #FFF;
+	color: #000;
 }
 
 

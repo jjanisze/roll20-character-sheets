@@ -1060,6 +1060,8 @@ on("change:repeating_weaponsranged:wr_line", async (eventInfo) => {
         let rightID = v1.inv_hand_right_id;
         let fistsID = v1.global_fists_id;
         let selectedWeaponHand = v1.selectedWeaponHand;
+        let description = "";
+        //"attr_inv_hand_right_description", "attr_inv_hand_left_description"
         equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, selectedWeaponHand, WEAPON_TYPE_RANGED);
     });
  });

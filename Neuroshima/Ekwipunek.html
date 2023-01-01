@@ -2,7 +2,9 @@
     <h1>Wyposażenie</h1>
     <label>Ręka wybrana<input type="text" name="attr_selectedWeaponHand" readonly /></label>
     <label>Ręka lewa<input type="text" name="attr_inv_hand_left_name" readonly /></label>
+    <label>Ręka lewa opis<input type="text" name="attr_inv_hand_left_description" readonly /></label>
     <label>Ręka prawa<input type="text" name="attr_inv_hand_right_name" readonly /></label>
+    <label>Ręka prawa opis<input type="text" name="attr_inv_hand_right_description" readonly /></label>
     <input type="text" name="attr_inv_hand_left_id" value="">
     <input type="text" name="attr_inv_hand_right_id" value="">
     <br/>
@@ -16,8 +18,10 @@
                 <div class="divTableHeading">
                     <div class="divTableRow">
                         <div class="divTableHead"><h4>Nazwa</h4></div>
-                        <div class="divTableHead"><h4>W magazynku</h4></div>
-                        <div class="divTableHead"><h4>Linia oporządzenia</h4></div>
+                        <div class="divTableHead"><h4>MAG</h4></div>
+                        <div class="divTableHead"><h4>MAX</h4></div>
+                        <div class="divTableHead"><h4>Gram</h4></div>
+                        <div class="divTableHead"><h4>Gdzie</h4></div>
                     </div>
                 </div>
                 <div class="divTableBody">
@@ -28,6 +32,8 @@
                         <div class="divTableCell">
                             <input type="number" name="attr_wr_ammo" class="big-black-box" placeholder="0" />
                         </div>
+                        <div class="divTableCell"><input type="number" name="attr_wr_magazine" class="big-black-box" placeholder="0" /></div>
+                        <div class="divTableCell"><input type="number" name="attr_wr_total_weight" class="big-inactive-box" placeholder="0" readonly /></div>
                         <div class="divTableCell">
                             <select name="attr_wr_line" class="big-black-box">
                                 <option value="0">Lewa</option>
@@ -112,16 +118,10 @@
                             <h5>Kaliber</h5>
                         </div>
                         <div class="divTableHead">
-                            <h5>Pojemność</h5>
-                        </div>
-                        <div class="divTableHead">
                             <h5>Gr&nbsp;pusta</h5>
                         </div>
                         <div class="divTableHead">
                             <h5>Gr&nbsp;pocisk</h5>
-                        </div>
-                        <div class="divTableHead">
-                            <h5>Gr&nbsp;suma</h5>
                         </div>
                     </div>
                 </div>
@@ -149,14 +149,10 @@
                         </div>
                         <div class="divTableCell"><input type="text" name="attr_wr_caliber" class="big-black-box"
                                 placeholder="--" /></div>
-                        <div class="divTableCell"><input type="number" name="attr_wr_magazine" class="big-black-box"
-                                placeholder="0" /></div>
                         <div class="divTableCell"><input type="number" name="attr_wr_empty_weight" class="big-black-box"
                                 placeholder="--" /></div>
                         <div class="divTableCell"><input type="number" name="attr_wr_bullet_weight"
                                 class="big-black-box" placeholder="--" /></div>
-                        <div class="divTableCell"><input type="number" name="attr_wr_total_weight" class="big-black-box"
-                                placeholder="0" readonly /></div>
                     </div>
                 </div>
             </div>
