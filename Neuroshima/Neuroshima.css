@@ -480,8 +480,9 @@ table.wspolczynniki input[type=number].wsp-star-display {
 	resize:none;
 	overflow:hidden;
 	-moz-appearance:none;
-	margin-top:5px;
+	margin-top:1px;
 	padding:0px;
+	margin-bottom:-8px;
 }
 
 .charsheet div.effectconfig {
@@ -969,6 +970,19 @@ table.wspolczynniki input[type=number].wsp-star-display {
 .charsheet div.divTableCell, div.divTableHead {
 	display: table-cell;
 	padding: 0px 2px 1px 2px;
+}
+.charsheet div.divTableUpperborder {
+	border-top: 4px solid #0000009e;
+}
+.charsheet div.divTableStopper {
+	border-right: 4px solid #0000009e;
+    padding-right: 20px
+}
+.charsheet div.divTableCellSpecial {
+	background-color: rgba(0, 0, 0, 0.15);
+}
+.charsheet span.spanDivTableLabel {
+	font-size: 17px;
 }
 .charsheet div.divTableHeading {
 	background-color: rgba(0, 0, 0, 0.15);

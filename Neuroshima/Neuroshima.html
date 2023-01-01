@@ -1332,6 +1332,15 @@
     <input type="text" name="attr_inv_hand_left_type" value="melee">
     <input type="text" name="attr_inv_hand_right_type" value="melee">
     <br/>
+    <h1>Obciążenie</h1>
+    <div>
+        <div>
+            <h2>Waga</h2>
+        </div>
+        <div>
+            <h2>Obciążenie</h2>
+        </div>
+    </div>
     <h1>Broń Dystansowa</h1>
     <fieldset class="repeating_weaponsranged">
         <div class="weaponRangedItem">
@@ -1421,7 +1430,7 @@
                                 placeholder="--" />
                         </div>
                         <div class="divTableCell">
-                            <input type="checkbox" name="attr_wr_hideable" class="big-black-box" value="0">
+                            <input type="checkbox" name="attr_wr_hideable" value="0">
                         </div>
                     </div>
                 </div>
@@ -1477,7 +1486,9 @@
                     </div>
                 </div>
             </div>
-            <textarea name="attr_wr_notes" class="effect" style="height:35px;">Reguły dodatkowe</textarea>
+            <div class="divTable">
+                <textarea name="attr_wr_notes" class="effect" style="height:35px;">Reguły dodatkowe: </textarea>
+            </div>
         </div>
     </fieldset>
 
@@ -1489,19 +1500,15 @@
             <div class="divTable">
                 <div class="divTableHeading">
                     <div class="divTableRow">
-                        <div class="divTableHead">Nazwa</div>
-                        <div class="divTableHead">Wymagana budowa</div>
-                        <div class="divTableHead">Gramy</div>
-                        <div class="divTableHead">Linia oporządzenia</div>
+                        <div class="divTableHead"><h4>Nazwa</h4></div>
+                        <div class="divTableHead"><h4>Gram</h4></div>
+                        <div class="divTableHead"><h4>Gdzie</h4></div>
                     </div>
                 </div>
                 <div class="divTableBody">
                     <div class="divTableRow">
                         <div class="divTableCell">
                             <input type="text" name="attr_wm_name" class="big-black-box" />
-                        </div>
-                        <div class="divTableCell">
-                            <input type="number" name="attr_wm_req_strength" class="big-black-box" />
                         </div>
                         <div class="divTableCell">
                             <input type="number" name="attr_wm_weight" class="big-black-box" />
@@ -1523,7 +1530,8 @@
                     <div class="divTableRow">
                         <div class="divTableHead">+ZR atak</div>
                         <div class="divTableHead">+ZR obrona</div>
-                        <div class="divTableHead">+ZR wielu przeciwników</div>
+                        <div class="divTableHead">+ZR wielu</div>
+                        <div class="divTableHead">Budowa</div>
                         <div class="divTableHead">Obuchowa</div>
                     </div>
                 </div>
@@ -1539,6 +1547,9 @@
                             <input type="number" name="attr_wm_bonus_multiple" class="big-black-box" />
                         </div>
                         <div class="divTableCell">
+                            <input type="number" name="attr_wm_req_strength" class="big-black-box" />
+                        </div>
+                        <div class="divTableCell">
                             <input type="checkbox" name="attr_wm_blunt" value="0">
                         </div>
                     </div>
@@ -1547,16 +1558,20 @@
             <div class="divTable">
                 <div class="divTableHeading">
                     <div class="divTableRow">
-                        <div class="divTableHead">Próg siły</div>
-                        <div class="divTableHead">1 sukces</div>
-                        <div class="divTableHead">2 sukcesy</div>
-                        <div class="divTableHead">3 sukcesy</div>
+                        <div class="divTableHead divTableUpperborder">Siła</div>
+                        <div class="divTableHead divTableUpperborder">1 S</div>
+                        <div class="divTableHead divTableUpperborder">2 S</div>
+                        <div class="divTableHead divTableStopper divTableUpperborder">3 S</div>
+                        <div class="divTableHead divTableUpperborder">Siła</div>
+                        <div class="divTableHead divTableUpperborder">1 S</div>
+                        <div class="divTableHead divTableUpperborder">2 S</div>
+                        <div class="divTableHead divTableUpperborder">3 S</div>
                     </div>
                 </div>
                 <div class="divTableBody">
                     <div class="divTableRow">
                         <div class="divTableCell">
-                            Poniżej <input type="number" name="attr_wm_dmg_thresh_0" class="big-black-box"/>
+                            <span class="spanDivTableLabel">1 &gt;&nbsp;</span><input type="number" name="attr_wm_dmg_thresh_0" class="big-black-box"/>
                         </div>
                         <div class="divTableCell">
                             <select name="attr_wm_dmg_thresh_0_a" class="big-black-box">
@@ -1574,7 +1589,7 @@
                                 <option value="27">K</option>
                             </select>
                         </div>
-                        <div class="divTableCell">
+                        <div class="divTableCell divTableStopper">
                             <select name="attr_wm_dmg_thresh_0_c" class="big-black-box">
                                 <option value="1">D</option>
                                 <option value="3">L</option>
@@ -1582,68 +1597,8 @@
                                 <option value="27">K</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="divTableRow">
                         <div class="divTableCell">
-                            Poniżej <input type="number" name="attr_wm_dmg_thresh_1" class="big-black-box"/>
-                        </div>
-                        <div class="divTableCell">
-                            <select name="attr_wm_dmg_thresh_1_a" class="big-black-box">
-                                <option value="1">D</option>
-                                <option value="3">L</option>
-                                <option value="9">C</option>
-                                <option value="27">K</option>
-                            </select>
-                        </div>
-                        <div class="divTableCell">
-                            <select name="attr_wm_dmg_thresh_1_b" class="big-black-box">
-                                <option value="1">D</option>
-                                <option value="3">L</option>
-                                <option value="9">C</option>
-                                <option value="27">K</option>
-                            </select>
-                        </div>
-                        <div class="divTableCell">
-                            <select name="attr_wm_dmg_thresh_1_c" class="big-black-box">
-                                <option value="1">D</option>
-                                <option value="3">L</option>
-                                <option value="9">C</option>
-                                <option value="27">K</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="divTableRow">
-                        <div class="divTableCell">
-                            Poniżej <input type="number" name="attr_wm_dmg_thresh_2" class="big-black-box"/>
-                        </div>
-                        <div class="divTableCell">
-                            <select name="attr_wm_dmg_thresh_2_a" class="big-black-box">
-                                <option value="1">D</option>
-                                <option value="3">L</option>
-                                <option value="9">C</option>
-                                <option value="27">K</option>
-                            </select>
-                        </div>
-                        <div class="divTableCell">
-                            <select name="attr_wm_dmg_thresh_2_b" class="big-black-box">
-                                <option value="1">D</option>
-                                <option value="3">L</option>
-                                <option value="9">C</option>
-                                <option value="27">K</option>
-                            </select>
-                        </div>
-                        <div class="divTableCell">
-                            <select name="attr_wm_dmg_thresh_2_c" class="big-black-box">
-                                <option value="1">D</option>
-                                <option value="3">L</option>
-                                <option value="9">C</option>
-                                <option value="27">K</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="divTableRow">
-                        <div class="divTableCell">
-                            Poniżej <input type="number" name="attr_wm_dmg_thresh_3" class="big-black-box"/>
+                            <span class="spanDivTableLabel">4 &gt;&nbsp;</span><input type="number" name="attr_wm_dmg_thresh_3" class="big-black-box"/>
                         </div>
                         <div class="divTableCell">
                             <select name="attr_wm_dmg_thresh_3_a" class="big-black-box">
@@ -1672,7 +1627,34 @@
                     </div>
                     <div class="divTableRow">
                         <div class="divTableCell">
-                            Poniżej <input type="number" name="attr_wm_dmg_thresh_4" class="big-black-box"/>
+                            <span class="spanDivTableLabel">2 &gt;&nbsp;</span><input type="number" name="attr_wm_dmg_thresh_1" class="big-black-box"/>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_1_a" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_1_b" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell divTableStopper">
+                            <select name="attr_wm_dmg_thresh_1_c" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                        <span class="spanDivTableLabel">5 &gt;&nbsp;</span><input type="number" name="attr_wm_dmg_thresh_4" class="big-black-box"/>
                         </div>
                         <div class="divTableCell">
                             <select name="attr_wm_dmg_thresh_4_a" class="big-black-box">
@@ -1701,9 +1683,36 @@
                     </div>
                     <div class="divTableRow">
                         <div class="divTableCell">
-                            Od <input type="number" name="attr_wm_dmg_thresh_5" class="big-black-box"/>
+                        <span class="spanDivTableLabel">3 &gt;&nbsp;</span><input type="number" name="attr_wm_dmg_thresh_2" class="big-black-box"/>
                         </div>
                         <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_2_a" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell">
+                            <select name="attr_wm_dmg_thresh_2_b" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell divTableStopper">
+                            <select name="attr_wm_dmg_thresh_2_c" class="big-black-box">
+                                <option value="1">D</option>
+                                <option value="3">L</option>
+                                <option value="9">C</option>
+                                <option value="27">K</option>
+                            </select>
+                        </div>
+                        <div class="divTableCell divTableCellSpecial">
+                        <span class="spanDivTableLabel">6 &lt;=&nbsp;</span><input type="number" name="attr_wm_dmg_thresh_5" class="big-black-box"/>
+                        </div>
+                        <div class="divTableCell divTableCellSpecial">
                             <select name="attr_wm_dmg_thresh_5_a" class="big-black-box">
                                 <option value="1">D</option>
                                 <option value="3">L</option>
@@ -1711,7 +1720,7 @@
                                 <option value="27">K</option>
                             </select>
                         </div>
-                        <div class="divTableCell">
+                        <div class="divTableCell divTableCellSpecial">
                             <select name="attr_wm_dmg_thresh_5_b" class="big-black-box">
                                 <option value="1">D</option>
                                 <option value="3">L</option>
@@ -1719,7 +1728,7 @@
                                 <option value="27">K</option>
                             </select>
                         </div>
-                        <div class="divTableCell">
+                        <div class="divTableCell divTableCellSpecial">
                             <select name="attr_wm_dmg_thresh_5_c" class="big-black-box">
                                 <option value="1">D</option>
                                 <option value="3">L</option>
@@ -1729,6 +1738,9 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="divTable">
+                <textarea name="attr_wm_notes" class="effect" style="height:35px;">Reguły dodatkowe: </textarea>
             </div>
     </fieldset>
 </div></div></div><script type="text/worker">/* ===== PARAMETERS ==========
