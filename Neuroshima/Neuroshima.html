@@ -1321,6 +1321,7 @@
     <hr>
 </div><div class="page-ekwipunek">
     <h1>Wyposażenie</h1>
+    <label>Ręka wybrana<input type="text" name="attr_selectedWeaponHand" readonly /></label>
     <label>Ręka lewa<input type="text" name="attr_inv_hand_left_name" readonly /></label>
     <label>Ręka prawa<input type="text" name="attr_inv_hand_right_name" readonly /></label>
     <input type="text" name="attr_inv_hand_left_id" value="">
@@ -2701,8 +2702,21 @@ function generate_unequip_dictionary(tgtline, line_id, name_qualifier_pairs, cal
     getSectionIDs(pairs[pairs.length - 1][0], helper_callback);
   };
 
+const no_weapon_config_dictionary = {
+    "selectedWeaponHand":HAND_NONE, 
+    "weaponskillssheetTab":WEAPON_TYPE_NONE,
+    "selected_weapon_ID":"",
+    "modi_battle":0,
+    "modi_inaccuracy_penalty":0,
+    "modi_distance_penalty":0,
+    "weapon_attack_penalty":0,
+    "selected_weapon_ranged_fire_button":-1,
+    "weapon_attack_range":0,
+    "inaccuracy_penalty":0,
+};
 
-function equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, type) {
+
+function equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, selectedWeaponHand, type) {
     // Unequip 
     let ued = {};
     let actionString = "";
@@ -2711,12 +2725,18 @@ function equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, type
         ued["inv_hand_left_name"] = UNEQUIP_NAME;
         ued["inv_hand_left_type"] = WEAPON_TYPE_MELEE;
         actionString = `Odkłada z lewej ręki ${curName}`
+        if ( selectedWeaponHand == HAND_LEFT ) {
+            Object.assign(ued, no_weapon_config_dictionary);
+        }
     }
     if( curSource == rightID && curLine != 1) {
         ued["inv_hand_right_id"] = fistsID;
         ued["inv_hand_right_name"] = UNEQUIP_NAME;
         ued["inv_hand_right_type"] = WEAPON_TYPE_MELEE;
         actionString = `Odkłada z prawej ręki ${curName}`
+        if ( selectedWeaponHand == HAND_RIGHT ) {
+            Object.assign(ued, no_weapon_config_dictionary);
+        }
     }
     if( Object.keys(ued).length > 0 ) {
         setAttrs(ued);
@@ -2727,62 +2747,71 @@ function equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, type
                 finishRoll(results.rollId, {});
             });
         }
-        return;
+    } else {
+        generate_unequip_dictionary(
+            curLine, curSource,
+            [["weaponsranged", "wr"], ["weaponsmelee", "wm"]],
+            async (dictionary) => {
+                // Equip logic
+                let secondActionString = ""
+                if(curLine == 0) {
+                    dictionary["inv_hand_left_name"] = curName;
+                    dictionary["inv_hand_left_id"] = curSource;
+                    dictionary["inv_hand_left_type"] = type;
+                    secondActionString = `Dobywa lewą ręką ${curName}`;
+                    if ( selectedWeaponHand == HAND_LEFT ) {
+                        Object.assign(dictionary, no_weapon_config_dictionary);
+                    }
+                } else if (curLine == 1) {
+                    dictionary["inv_hand_right_name"] = curName;
+                    dictionary["inv_hand_right_id"] = curSource;
+                    dictionary["inv_hand_right_type"] = type;
+                    secondActionString = `Dobywa prawą ręką ${curName}`;
+                    if ( selectedWeaponHand == HAND_RIGHT ) {
+                        Object.assign(dictionary, no_weapon_config_dictionary);
+                    }
+                }
+                if( Object.keys(dictionary).length > 0 ) {
+                    setAttrs(dictionary); 
+                }
+                if( actionString.length > 0 ) {
+                    actionString += ". ";
+                }
+                if( secondActionString.length > 0) {
+                    actionString += secondActionString;
+                }
+                if( actionString.length > 0 ) {
+                    startRoll(`&{template:message} {{message=${actionString}}}`, (results) => {
+                        finishRoll(results.rollId, {});
+                    });
+                }
+        });
     }
-    
-    generate_unequip_dictionary(
-        curLine, curSource,
-        [["weaponsranged", "wr"], ["weaponsmelee", "wm"]],
-        async (dictionary) => {
-            // Equip logic
-            let secondActionString = ""
-            if(curLine == 0) {
-                dictionary["inv_hand_left_name"] = curName;
-                dictionary["inv_hand_left_id"] = curSource;
-                dictionary["inv_hand_left_type"] = type;
-                secondActionString = `Dobywa lewą ręką ${curName}`;
-            } else if (curLine == 1) {
-                dictionary["inv_hand_right_name"] = curName;
-                dictionary["inv_hand_right_id"] = curSource;
-                dictionary["inv_hand_right_type"] = type;
-                secondActionString = `Dobywa prawą ręką ${curName}`;
-            }
-            setAttrs(dictionary); 
-            if( actionString.length > 0 ) {
-                actionString += ". ";
-            }
-            if( secondActionString.length > 0) {
-                actionString += secondActionString;
-            }
-            if( actionString.length > 0 ) {
-                startRoll(`&{template:message} {{message=${actionString}}}`, (results) => {
-                    finishRoll(results.rollId, {});
-                });
-            }
-      });
 }
 
 on("change:repeating_weaponsranged:wr_line", async (eventInfo) => {
-    const v1 = getAttrs(["repeating_weaponsranged_wr_line", "repeating_weaponsranged_wr_name", "inv_hand_left_id", "inv_hand_right_id", "global_fists_id"], (v1) => {
+    const v1 = getAttrs(["repeating_weaponsranged_wr_line", "repeating_weaponsranged_wr_name", "inv_hand_left_id", "inv_hand_right_id", "global_fists_id", "selectedWeaponHand"], (v1) => {
         let curLine = v1.repeating_weaponsranged_wr_line;
         let curName = v1.repeating_weaponsranged_wr_name;
         let curSource = eventInfo.sourceAttribute;
         let leftID = v1.inv_hand_left_id;
         let rightID = v1.inv_hand_right_id;
         let fistsID = v1.global_fists_id;
-        equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, WEAPON_TYPE_RANGED);
+        let selectedWeaponHand = v1.selectedWeaponHand;
+        equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, selectedWeaponHand, WEAPON_TYPE_RANGED);
     });
  });
 
  on("change:repeating_weaponsmelee:wm_line", async (eventInfo) => {
-    const v1 = getAttrs(["repeating_weaponsmelee_wm_line", "repeating_weaponsmelee_wm_name", "inv_hand_left_id", "inv_hand_right_id", "global_fists_id"], (v1) => {
+    const v1 = getAttrs(["repeating_weaponsmelee_wm_line", "repeating_weaponsmelee_wm_name", "inv_hand_left_id", "inv_hand_right_id", "global_fists_id", "selectedWeaponHand"], (v1) => {
         let curLine = v1.repeating_weaponsmelee_wm_line;
         let curName = v1.repeating_weaponsmelee_wm_name;
         let curSource = eventInfo.sourceAttribute;
         let leftID = v1.inv_hand_left_id;
         let rightID = v1.inv_hand_right_id;
         let fistsID = v1.global_fists_id;
-        equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, WEAPON_TYPE_MELEE);
+        let selectedWeaponHand = v1.selectedWeaponHand;
+        equip_inner(curLine, curName, curSource, leftID, rightID, fistsID, selectedWeaponHand, WEAPON_TYPE_MELEE);
     });
  });
 
@@ -2918,21 +2947,13 @@ const FIRE_MODE_SBA = "mode-sba";
 const FIRE_MODE_BA = "mode-ba";
 const FIRE_MODE_A = "mode-a";
 
+
 function setWeaponSkillsSheet(hand) {
     let handField = `inv_hand_${hand}_type`;
     let handFieldID = `inv_hand_${hand}_id`;
-    let dictionary = {
-        "selectedWeaponHand":hand, 
-        "weaponskillssheetTab":WEAPON_TYPE_NONE,
-        "selected_weapon_ID":"",
-        "modi_battle":0,
-        "modi_inaccuracy_penalty":0,
-        "modi_distance_penalty":0,
-        "weapon_attack_penalty":0,
-        "selected_weapon_ranged_fire_button":-1,
-        "weapon_attack_range":0,
-        "inaccuracy_penalty":0,
-    };
+    let dictionary = {};
+    Object.assign(dictionary, no_weapon_config_dictionary);
+    dictionary["selectedWeaponHand"] = hand;
     getAttrs([handField, "inv_hand_left_id", "inv_hand_right_id"], (v1) => {
         if( hand != HAND_NONE ) {
             let selectedWeaponID = v1[handFieldID];
