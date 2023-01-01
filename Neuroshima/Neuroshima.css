@@ -954,7 +954,7 @@ table.wspolczynniki input[type=number].wsp-star-display {
 .charsheet div.weaponRangedItem, .charsheet div.weaponMeleeItem {
 	background-color: rgba(0,0,0,0.1);
 	margin: 10px;
-	padding:10px;
+	padding:4px 4px -4px 4px;
 	border:  2px solid rgba(0, 0, 0, 0.75);
 }
 
@@ -967,9 +967,8 @@ table.wspolczynniki input[type=number].wsp-star-display {
 	display: table-row;
 }
 .charsheet div.divTableCell, div.divTableHead {
-	border: 1px solid #000;
 	display: table-cell;
-	padding: 3px 10px;
+	padding: 0px 2px 0px 2px;
 }
 .charsheet div.divTableHeading {
 	background-color: rgba(0, 0, 0, 0.3);
