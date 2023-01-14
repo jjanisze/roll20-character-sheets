@@ -36,9 +36,10 @@ rolltemplate(class='sheet-rolltemplate-combat-ranged-single')
         h1 {{initialdifficulty}} test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})
         h4 {{penalties_str}}
         h3 {{penalties_sum_str}}
-        | <div style="{{#rollTotal() computed::rollz 0}}background-color:rgba(0, 255, 0, 0.3);{{/rollTotal() computed::rollz 0}}{{#rollTotal() computed::rollz 2}}background-color:rgba(255, 68, 0, 0.6);{{/rollTotal() computed::rollz 2}}{{#rollTotal() computed::rollz 4}}visibility:hidden;{{/rollTotal() computed::rollz 4}}">
         h4 Zacięcie = {{rollz}} / {{misfire_value}}
+        | <div style="{{#rollTotal() computed::rollz 0}}background-color:rgba(0, 255, 0, 0.3);{{/rollTotal() computed::rollz 0}}{{#rollTotal() computed::rollz 2}}background-color:rgba(255, 68, 0, 0.6);{{/rollTotal() computed::rollz 2}}{{#rollTotal() computed::rollz 4}}visibility:hidden;{{/rollTotal() computed::rollz 4}}">
         +rollcolorsdiv(3)
+        | </div>
         | {{#rollTotal() computed::rollz 2}}<h1 style="color: red;">Klik!</h1>{{/rollTotal() computed::rollz 2}}
 |
 |
