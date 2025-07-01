@@ -482,7 +482,9 @@ table.wspolczynniki input[type=number].wsp-star-display {
 	-moz-appearance:none;
 	margin-top:1px;
 	padding:0px;
-	margin-bottom:-8px;
+	margin-bottom:-4px;
+	margin-left: 4px;
+	margin-right: 4px;
 }
 
 .charsheet div.effectconfig {
@@ -1063,23 +1065,33 @@ table.wspolczynniki input[type=number].wsp-star-display {
 /** Reverse 1 - 20 highlight from default (20 good) to 1 good **/
 .sheet-rolltemplate-non-combat .inlinerollresult.fullfail,
 .sheet-rolltemplate-combat-ranged-single .inlinerollresult.fullfail,
+.sheet-rolltemplate-combat-ranged-rapid .inlinerollresult.fullfail,
 .sheet-rolltemplate-hit-location .inlinerollresult.fullfail,
 .sheet-rolltemplate-misfire-type .inlinerollresult.fullfail,
 .sheet-rolltemplate-non-combat .showtip.tipsy-n-right.fullfail,
 .sheet-rolltemplate-combat-ranged-single .showtip.tipsy-n-right.fullfail,
+.sheet-rolltemplate-combat-ranged-rapid .showtip.tipsy-n-right.fullfail,
 .sheet-rolltemplate-hit-location .showtip.tipsy-n-right.fullfail,
 .sheet-rolltemplate-misfire-type .showtip.tipsy-n-right.fullfail,
 .span.inlinerollresult.showtip.tipsy-n-right.fullfail {
 	border: 2px solid #3FB315 !important;
-
 }
 
 .sheet-rolltemplate-non-combat .inlinerollresult.fullcrit,
-.sheet-rolltemplate-combat-ranged-single .inlinerollresult.fullcrit
+.sheet-rolltemplate-combat-ranged-single .inlinerollresult.fullcrit,
+.sheet-rolltemplate-combat-ranged-rapid .inlinerollresult.fullcrit,
 .sheet-rolltemplate-hit-location .inlinerollresult.fullcrit,
 .sheet-rolltemplate-misfire-type .inlinerollresult.fullcrit {
 	border: 2px solid #B31515 !important;
 }
+
+.sheet-rolltemplate-combat-ranged-rapid .sheet-srt-main-container {
+	border: 2px solid #B31515 !important;
+	background-color: #3FB315 !important;
+}
+
+
+
 
 
 /*************************** ROLL TEMPLATES ***********************/

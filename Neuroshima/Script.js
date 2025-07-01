@@ -499,6 +499,7 @@ function umiejetnoscHandler(wspname, skillname, info) {
         let skillstring = ( modi_open ? "otwarty " : "zamknięty " )
         let penalty_string = "";
         let penalty_sum_string = "";
+        let segments = 0; // How many segments does this action take. 0 if it takes "a while"
 
         // Skill-specific
         let skill = 0;
@@ -580,14 +581,14 @@ function umiejetnoscHandler(wspname, skillname, info) {
                                 case 3:
                                 case 2:
                                 case 1:
-                                    dice_count = selected_weapon_ranged_fire_button;
+                                    segments = dice_count = selected_weapon_ranged_fire_button;
                                     rollMode = ROLL_MODE_COMBAT_RANGED_SINGLE;
                                     break;
+                                
                                 case 4:
                                 case 5:
                                 case 6:
-                                    let segments = selected_weapon_ranged_fire_button - 3;
-                                    dice_count = 1;
+                                    dice_count = segments = selected_weapon_ranged_fire_button - 3;
                                     rollMode = ROLL_MODE_COMBAT_RANGED_RAPID;
                                     break;
                                 case -1:
@@ -615,26 +616,38 @@ function umiejetnoscHandler(wspname, skillname, info) {
             } 
         }
 
-        let rstr = `&{template:${rollMode}} {{successes=[[0[computed value]]]}} {{finaldifficultylabel=[[0[computed value]]]}} {{passingvalue=[[0[computed value]]]}} `;
+        let rstr = `&{template:${rollMode}} {{successes=[[0[computed value]]](#" class="showtip" title="Riernar you're the absolute MVP you know that?")}} {{finaldifficultylabel=[[0[computed value]]]}} {{passingvalue=[[0[computed value]]]}} `;
         // Create string with appropriate number of dice rolls
         for(let i = 0; i<dice_count; ++i) {
             rstr += `{{roll${i+1}=[[1d20]]}} `;
         }
-        rstr += `{{base_wsp_name=${wsp_name}}} {{wsp_val=${statbase}}} {{skill-name=${skillstring}}} {{skillval=${skillvalue}}} `
-        rstr += `{{modi-open=[[${modi_open}]]}} {{penalties_str=${penalty_string}}} {{dice_count=[[${dice_count}]]}}`;
+        rstr += `{{base_wsp_name=${wsp_name}}} `;
+        rstr += `{{wsp_val=${statbase}}} `;
+        rstr += `{{skill-name=${skillstring}}} `;
+        rstr += `{{skillval=${skillvalue}}} `;
+        rstr += `{{modi-open=[[${modi_open}]]}} `;
+        rstr += `{{penalties_str=${penalty_string}}} `;
+        rstr += `{{dice_count=[[${dice_count}]]}} `;
+        rstr += `{{final_test_level=[[${final_test_level}]]}}`;
         
-        
+        // Optional extra attrs
+        let selected_hand_misfire = selected_hand_id.replace("_line", "_misfire");
+        let selected_hand_fire_rate = selected_hand_id.replace("_line", "_fire_rate");
+        let selected_hand_rounds_remaining = selected_hand_id.replace("_line", "_ammo");
+
+        // Handle ranged weaponry
         switch(rollMode){    
             case ROLL_MODE_COMBAT_RANGED_SINGLE:
                 // Get additional params relevant for combat derived from 1st order params
-                let selected_hand_misfire = selected_hand_id.replace("_line", "_misfire");
+                
+                // TODO: Skills may never reduce dice value below 1
                 getAttrs([selected_hand_misfire], (values_combat) => {
                     let misfireWeapon = (parseInt(values_combat[selected_hand_misfire])||0);
                     if(misfireWeapon == 0) {
                         penalty_sum_string += " Brakuje wartości zacięcia dla broni."
                     }
                     rstr +=  ` {{penalties_sum_str=${penalty_sum_string}}}`;
-                    rstr += ` {{rollz=[[1d20]]}} {{weapon_name=${selected_hand_name}}} {{misfire_value=${misfireWeapon}}} {{penalties_str=${penalty_string}}}`;
+                    rstr += ` {{rollz=[[1d20cs>${misfireWeapon}]]}} {{weapon_name=${selected_hand_name}}} {{misfire_value=${misfireWeapon}}} {{penalties_str=${penalty_string}}}`;
                     log(`Roll string: ${rstr}`);
                     startRoll(rstr, (results) => {
                         let x = 0;
@@ -703,6 +716,119 @@ function umiejetnoscHandler(wspname, skillname, info) {
                         }
                         
                         finishRoll(results.rollId, rollResult);    
+                    });
+                });
+                break;
+
+            case ROLL_MODE_COMBAT_RANGED_RAPID:
+                // Get additional params relevant for combat derived from 1st order params
+                getAttrs([selected_hand_fire_rate, selected_hand_rounds_remaining, selected_hand_misfire], (values_combat) => {
+                    let misfireWeapon = (parseInt(values_combat[selected_hand_misfire])||0);
+                    let fire_rate = (parseInt(values_combat[selected_hand_fire_rate])||0);
+                    let rounds_remaining = (parseInt(values_combat[selected_hand_rounds_remaining])||0);
+                    if(fire_rate == 0) {
+                        penalty_sum_string += " Brakuje wartości szybkostrzelności dla broni";
+                        fire_rate = 1;
+                    }
+                    rstr +=  ` {{penalties_sum_str=${penalty_sum_string}}}`;
+                    rstr += ` {{rollz=[[1d20]]}} {{weapon_name=${selected_hand_name}}} {{misfire_value=${misfireWeapon}}} {{penalties_str=${penalty_string}}}`;
+                    log(`Roll string: ${rstr}`);
+                    startRoll(rstr, (results) => {
+                        let misfireRoll = results.results.rollz.result;
+                        let diceval = results.results[`roll1`].result;
+                        let dice_style = 4;
+                        
+                        let fire_desc = "";
+                        let rounds = 0;
+                        switch(dice_count) {
+                            case 1:
+                                fire_desc += `Seria krótka - `
+                                rounds = fire_rate;
+                                break;
+                            case 2:
+                                fire_desc += `Seria długa - `
+                                rounds = 3 * fire_rate;
+                                break;
+                            case 3:
+                                fire_desc += `Ogień ciągły - `
+                                rounds = 6 * fire_rate;
+                                break;
+                        }
+                        fire_desc += ` ${rounds} pocisków`;
+                        if( rounds > rounds_remaining ) {
+                            fire_desc += `, ale w magazynku było tylko ${rounds_remaining}`;
+                            rounds = rounds_remaining;
+                        }
+                        fire_desc += ".\nStrzały: ";
+                        
+
+                        log(`diceval: ${diceval}, skill:${skill}`)
+                        
+                        // Subtract skill from die - cannot be lower than 1
+                        diceval -= skill;
+                        if( diceval < 1 ) {
+                            diceval = 1;
+                        }
+                        
+                        // Note: successes 0 (na styk) shall still count as hits
+                        let successes = default_test_value - diceval;
+
+                        // Calculate hits and misses
+                        let hits = 0;
+                        let misses = 0;
+                        let shots = ""
+                        let rollingSuccess = successes;
+                        let correctionCounter = 0;
+                        let correctionCount = 0;
+                        while( rounds > 0 ) {
+                            if( rollingSuccess >= 0 ) {
+                                hits++;
+                                rollingSuccess--;
+                                shots += "◎"
+                            } else {
+                                misses++;
+                                correctionCounter++;
+                                shots += "✖"
+                                if( correctionCounter >= 3) {
+                                    correctionCounter = 0;
+                                    rollingSuccess++;
+                                    correctionCount++;
+                                }
+                            }
+                            rounds--;
+                        }
+                        fire_desc += shots;
+                        fire_desc += `\n Trafień: ${hits}`
+
+                        let rollResult = {
+                            finaldifficultylabel : fire_desc,
+                        };
+                        
+                         // Misfire logic - can make the entire test fail
+                         if( misfireWeapon != 0 ) {
+                            if( misfireRoll >= misfireWeapon) {
+                                rollResult["rollz"] = 2;
+                                rollResult[`roll1`] = 4;
+                            } else {
+                                rollResult["rollz"] = 0;
+                            }
+                        } else {
+                            rollResult["rollz"] = 4;
+                        }
+
+                        // Paint die
+                        if(hits>0) {
+                            if(correctionCount>0) {
+                                rollResult[`roll1`] = 1
+                            } else {
+                                rollResult[`roll1`] = 0
+                            }
+                        } else {
+                            rollResult[`roll1`] = 2
+                        }
+                        
+                        finishRoll(results.rollId, rollResult);    
+
                     });
                 });
                 break;

@@ -8,44 +8,6 @@ mixin rollcolorsdiv(roll_count)
         </div>
         | {{/rollGreater() dice_count #{n++}}}
 
-
-
-rolltemplate(class='sheet-rolltemplate-non-combat')
-    div(class='sheet-template-container')
-        div(class='sheet-results')
-            h1 {{computed::finaldifficultylabel}} {{initialdifficulty}} test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})
-            h4(style="color:#9f0000;") {{penalties_str}}
-            h3 {{penalties_sum_str}}
-            h2 Zdawany na {{computed::passingvalue}}
-            +rollcolorsdiv(3)
-            h2
-                | {{#rollTotal() modi-open 0}}
-                |   Sukcesy: {{computed::successes}}
-                | {{/rollTotal() modi-open 0}}
-                | {{#rollTotal() modi-open 1}}
-                |   Punktów przewagi: {{computed::successes}}
-                | {{/rollTotal() modi-open 1}}
-
-rolltemplate(class='sheet-rolltemplate-message')
-    div(class='sheet-template-container')
-        h1 {{message}}
-
-rolltemplate(class='sheet-rolltemplate-combat-ranged-single')
-    div(class='sheet-template-container')
-        h2 Używszy {{weapon_name}}
-        h1 {{initialdifficulty}} test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})
-        h4 {{penalties_str}}
-        h3 {{penalties_sum_str}}
-        h4 Zacięcie = {{rollz}} / {{misfire_value}}
-        | <div style="{{#rollTotal() computed::rollz 0}}background-color:rgba(0, 255, 0, 0.3);{{/rollTotal() computed::rollz 0}}{{#rollTotal() computed::rollz 2}}background-color:rgba(255, 68, 0, 0.6);{{/rollTotal() computed::rollz 2}}{{#rollTotal() computed::rollz 4}}visibility:hidden;{{/rollTotal() computed::rollz 4}}">
-        +rollcolorsdiv(3)
-        | </div>
-        | {{#rollTotal() computed::rollz 2}}<h1 style="color: red;">Klik!</h1>{{/rollTotal() computed::rollz 2}}
-|
-|
-|
-|
-|
 mixin between_gimg(min, max, imgsrc, dicename="location")
     if min == max
         | {{#rollTotal() #{dicename} #{min}}}
@@ -70,6 +32,69 @@ mixin between_text(min,max,str, dicename="location")
         | {{#rollBetween() #{dicename} #{min} #{max}}}
         | #{str}
         | {{/rollBetween() #{dicename} #{min} #{max}}}
+
+mixin decodeDifficulty(difficulty)
+    | {{#rollTotal() #{difficulty} 0}} Łatwy {{/rollTotal() #{difficulty} 0}}
+    | {{#rollTotal() #{difficulty} 1}} Przeciętny {{/rollTotal() #{difficulty} 1}}
+    | {{#rollTotal() #{difficulty} 2}} Problematyczny {{/rollTotal() #{difficulty} 2}}
+    | {{#rollTotal() #{difficulty} 3}} Trudny {{/rollTotal() #{difficulty} 3}}
+    | {{#rollTotal() #{difficulty} 4}} Bardzo Trudny {{/rollTotal() #{difficulty} 4}}
+    | {{#rollTotal() #{difficulty} 5}} Cholernie Trudny {{/rollTotal() #{difficulty} 5}}
+    | {{#rollTotal() #{difficulty} 6}} Fartowny {{/rollTotal() #{difficulty} 6}}
+    | {{#rollTotal() #{difficulty} 7}} Mistrzowski {{/rollTotal() #{difficulty} 7}}
+    | {{#rollTotal() #{difficulty} 8}} Arcymistrzowski {{/rollTotal() #{difficulty} 8}}
+
+rolltemplate(class='sheet-rolltemplate-non-combat')
+    div(class='sheet-template-container')
+        div(class='sheet-results')
+            h1 {{computed::finaldifficultylabel}} {{initialdifficulty}} test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})
+            h4(style="color:#9f0000;") {{penalties_str}}
+            h3 {{penalties_sum_str}}
+            h2 Zdawany na {{computed::passingvalue}}
+            +rollcolorsdiv(3)
+            h2
+                | {{#rollTotal() modi-open 0}}
+                |   Sukcesy: {{computed::successes}}
+                | {{/rollTotal() modi-open 0}}
+                | {{#rollTotal() modi-open 1}}
+                |   Punktów przewagi: {{computed::successes}}
+                | {{/rollTotal() modi-open 1}}
+
+rolltemplate(class='sheet-rolltemplate-message')
+    div(class='sheet-template-container')
+        h1 {{message}}
+
+rolltemplate(class='sheet-rolltemplate-combat-ranged-single')
+    div(class='sheet-template-container')
+        h2 Używszy {{weapon_name}}
+        h1 
+            +decodeDifficulty("final_test_level")
+            | {{level_base}} test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})
+        h4 {{penalties_str}}
+        h4 Zacięcie = {{rollz}} / {{misfire_value}}
+        | <div style="{{#rollTotal() computed::rollz 0}}background-color:rgba(0, 255, 0, 0.3);{{/rollTotal() computed::rollz 0}}{{#rollTotal() computed::rollz 2}}background-color:rgba(255, 68, 0, 0.6);{{/rollTotal() computed::rollz 2}}{{#rollTotal() computed::rollz 4}}visibility:hidden;{{/rollTotal() computed::rollz 4}}">
+        +rollcolorsdiv(3)
+        | </div>
+        | {{#rollTotal() computed::rollz 2}}<h1 style="color: red;">Klik!</h1>{{/rollTotal() computed::rollz 2}}
+
+rolltemplate(class='sheet-rolltemplate-combat-ranged-rapid')
+    div(class='sheet-template-container')
+        div(class='sheet-srt-main-container')
+            h2 Używszy {{weapon_name}} automatycznie
+            h1 
+                +decodeDifficulty("final_test_level")
+                | test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})
+            h4 {{penalties_str}}
+            h4 Zacięcie = {{rollz}} / {{misfire_value}}
+            | <div style="{{#rollTotal() computed::rollz 0}}background-color:rgba(0, 255, 0, 0.3);{{/rollTotal() computed::rollz 0}}{{#rollTotal() computed::rollz 2}}background-color:rgba(255, 68, 0, 0.6);{{/rollTotal() computed::rollz 2}}{{#rollTotal() computed::rollz 4}}visibility:hidden;{{/rollTotal() computed::rollz 4}}">
+            +rollcolorsdiv(3)
+            | </div>
+            | {{#rollTotal() computed::rollz 2}}
+            | <h1 style="color: red;">Klik!</h1>
+            | {{/rollTotal() computed::rollz 2}}
+            | {{#rollTotal() computed::rollz 0}} 
+            h1 {{computed::finaldifficultylabel}}
+            | {{/rollTotal() computed::rollz 0}}
 
 rolltemplate(class='sheet-rolltemplate-hit-location')
     div(class='sheet-template-container')
@@ -100,7 +125,7 @@ rolltemplate(class='sheet-rolltemplate-misfire-type')
 rolltemplate(class='sheet-rolltemplate-melee-turn')
     div(class='sheet-template-container')
         h2 Używszy {{weapon_name}}
-        h1 {{initialdifficulty}} test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})
+        h1 decodeDifficulty("initialdifficulty") test {{skill-name}} {{skillval}} na {{base_wsp_name}} ({{wsp_val}})
         h4 {{penalties_str}}
         h3 {{penalties_sum_str}}
         | <div style="{{#rollTotal() computed::rollz 0}}background-color:rgba(0, 255, 0, 0.3);{{/rollTotal() computed::rollz 0}}{{#rollTotal() computed::rollz 2}}background-color:rgba(255, 68, 0, 0.6);{{/rollTotal() computed::rollz 2}}{{#rollTotal() computed::rollz 4}}visibility:hidden;{{/rollTotal() computed::rollz 4}}">
